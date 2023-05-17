@@ -221,12 +221,12 @@ Resources:
   # Lambda Functions Configuration
   #-----------------------------------------------------
 
-  GetPlaylistLambda:
+  GetMessageHistoryByDateLambda:
     Type: AWS::Serverless::Function
     Properties:
       Role: !GetAtt AccessRole.Arn
       CodeUri: MusicPlaylistServiceLambda
-      Handler: com.nashss.se.musicplaylistservice.lambda.GetPlaylistLambda::handleRequest
+      Handler: com.nashss.se.musicplaylistservice.lambda.GetMessageHistoryByDateLambda::handleRequest
       Runtime: java11
       Architectures:
         - x86_64

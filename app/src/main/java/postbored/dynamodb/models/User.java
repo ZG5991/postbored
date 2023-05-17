@@ -11,7 +11,7 @@ import java.util.Objects;
  * Represents a record in the album_tracks table.
  */
 @DynamoDBTable(tableName = "album_tracks")
-public class AlbumTrack {
+public class User {
     private String asin;
     private Integer trackNumber;
     private String albumName;
@@ -61,7 +61,7 @@ public class AlbumTrack {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AlbumTrack that = (AlbumTrack) o;
+        User that = (User) o;
         return asin.equals(that.asin) &&
                trackNumber.equals(that.trackNumber) &&
                Objects.equals(albumName, that.albumName) &&
