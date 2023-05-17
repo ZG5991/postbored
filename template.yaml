@@ -330,65 +330,61 @@ Resources:
   #-----------------------------------------------------
   
   UserTable:
-    Type: AWS::DynamoDB::Table
+    Type: 'AWS::DynamoDB::Table'
     Properties:
-      TableName: "user_table"
-      BillingMode: "PAY_PER_REQUEST"
+      TableName: userTable
+      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: "userID"
-          AttributeType: "S"
+        - AttributeName: userID
+          AttributeType: S
       KeySchema:
-        - AttributeName: "userID"
-          KeyType: "HASH"
-
+        - AttributeName: userID
+          KeyType: HASH
       GlobalSecondaryIndexes:
-        - IndexName: "friendsList-index"
+        - IndexName: friendsList-index
           KeySchema:
-            - AttributeName: "friendsList"
-              KeyType: "HASH"
-            Projection:
-              ProjectionType: "KEYS_ONLY"
-        - IndexName: "messageHistory-index"
-            KeySchema:
-              - AttributeName: "messageHistory"
-                KeyType: "HASH"
-              Projection:
-                ProjectionType: "ALL"
+            - AttributeName: friendsList
+              KeyType: HASH
+        - IndexName: messageHistory-index
+          KeySchema:
+            - AttributeName: messageHistory
+              KeyType: HASH
+    Projection:
+      ProjectionType: ALL
 
   MessageBoardTable:
-    Type: AWS::DynamoDB::Table
+    Type: 'AWS::DynamoDB::Table'
     Properties:
-      TableName: "message_board_table"
-      BillingMode: "PAY_PER_REQUEST"
+      TableName: messageTable
+      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: "messageID"
-          AttributeType: "S"
-        - AttributeName: "timeSent"
-          AttributeType: "S"
-        - AttributeName: "messageContent"
-          AttributeType: "S"
-        - AttributeName: "posterID"
-          AttributeType: "S"
+        - AttributeName: messageID
+          AttributeType: S
+        - AttributeName: timeSent
+          AttributeType: S
+        - AttributeName: messageContent
+          AttributeType: S
+        - AttributeName: posterID
+          AttributeType: S
       KeySchema:
-        - AttributeName: "messageID"
-          KeyType: "HASH"
-        - AttributeName: "timeSent"
-          KeyType: "RANGE"
+        - AttributeName: messageID
+          KeyType: HASH
+        - AttributeName: timeSent
+          KeyType: RANGE
       GlobalSecondaryIndexes:
-        - IndexName: "messageID-index"
+        - IndexName: messageID-index
           KeySchema:
-            - AttributeName: "messageID"
-              KeyType: "HASH"
-            Projection:
-              ProjectionType: "ALL"
-        - IndexName: "posterID_timeSent-index"
+            - AttributeName: messageID
+              KeyType: HASH
+        - IndexName: posterID_timeSent-index
           KeySchema:
-            - AttributeName: "messageHistory"
-              KeyType: "HASH"
-            - AttributeName: "timeSent"
-              KeyType: "RANGE"
-            Projection:
-              ProjectionType: "ALL"
+            - AttributeName: messageHistory
+              KeyType: HASH
+            - AttributeName: timeSent
+              KeyType: RANGE
+    Projection:
+      ProjectionType: ALL
+
 
 #-----------------------------------------------------
 # The outputs defined below will be printed

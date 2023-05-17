@@ -30,7 +30,7 @@ public class Message {
     @DynamoDBIndexRangeKey(globalSecondaryIndexName = "posterID_timeSent-index", attributeName = "timeSent")
     @DynamoDBRangeKey(attributeName = "timeSent")
     public String getTimeSent() {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return timeSent.format(formatter);
     }
 

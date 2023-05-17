@@ -1,56 +1,56 @@
 package postbored.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a record in the album_tracks table.
  */
-@DynamoDBTable(tableName = "album_tracks")
+@DynamoDBTable(tableName = "userTable")
 public class User {
-    private String asin;
-    private Integer trackNumber;
-    private String albumName;
-    private String songTitle;
 
-    @DynamoDBHashKey(attributeName = "asin")
-    public String getAsin() {
-        return asin;
+    private String userID;
+    private List<String> friendsList;
+    private List<String> messageHistory;
+
+    @DynamoDBHashKey(attributeName = "userID")
+    public String getUserID() {
+        return userID;
     }
 
-    public void setAsin(String asin) {
-        this.asin = asin;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
-    @DynamoDBRangeKey(attributeName = "track_number")
-    public Integer getTrackNumber() {
-        return trackNumber;
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "friendsList-index", attributeName = "friendsList")
+    @DynamoDBAttribute(attributeName = "friendsList")
+    public String getFriendsList() {
+        return convertListToString(friendsList);
     }
 
-    public void setTrackNumber(Integer trackNumber) {
-        this.trackNumber = trackNumber;
+    public void setFriendsList(List<String> friendsList) {
+        this.friendsList = friendsList;
     }
 
-    @DynamoDBAttribute(attributeName = "album_name")
-    public String getAlbumName() {
-        return albumName;
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "messageHistory-index", attributeName = "messageHistory")
+    @DynamoDBAttribute(attributeName = "messageHistory")
+    public String getMessageHistory() {
+        return convertListToString(messageHistory);
     }
 
-    public void setAlbumName(String albumName) {
-        this.albumName = albumName;
+    public void setMessageHistory(List<String> messageHistory) {
+        this.messageHistory = messageHistory;
     }
 
-    @DynamoDBAttribute(attributeName = "song_title")
-    public String getSongTitle() {
-        return songTitle;
-    }
-
-    public void setSongTitle(String songTitle) {
-        this.songTitle = songTitle;
+    public String convertListToString(List<String> stringList) {
+        StringJoiner joiner = new StringJoiner(",");
+        for (String str : stringList) {
+            joiner.add(str);
+        }
+        return joiner.toString();
     }
 
     @Override
@@ -61,25 +61,12 @@ public class User {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        User that = (User) o;
-        return asin.equals(that.asin) &&
-               trackNumber.equals(that.trackNumber) &&
-               Objects.equals(albumName, that.albumName) &&
-               Objects.equals(songTitle, that.songTitle);
+        User user = (User) o;
+        return Objects.equals(userID, user.userID) && Objects.equals(friendsList, user.friendsList) && Objects.equals(messageHistory, user.messageHistory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(asin, trackNumber, albumName, songTitle);
-    }
-
-    @Override
-    public String toString() {
-        return "AlbumTrack{" +
-               "asin='" + asin + '\'' +
-               ", trackNumber=" + trackNumber +
-               ", albumName='" + albumName + '\'' +
-               ", songTitle='" + songTitle + '\'' +
-               '}';
+        return Objects.hash(userID, friendsList, messageHistory);
     }
 }
