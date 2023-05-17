@@ -119,5 +119,6 @@ Client sends get messages form to Website Message Board page. Website Message Bo
 
 ## Pages
 
-//diagram to be inserted upon completion
- 
+
+ ![image](https://github.com/ZG5991/postbored/assets/92684029/6ecd90c7-6e2c-431d-a31e-cdc0eb9c1a75)
+
