@@ -48,7 +48,7 @@ Resources:
   #-----------------------------------------------------
   # Cognito Configuration for user management
   #-----------------------------------------------------
-  
+
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
@@ -58,7 +58,7 @@ Resources:
             Priority: 1
       UsernameAttributes:
         - email
-      UsernameConfiguration: 
+      UsernameConfiguration:
         CaseSensitive: false
       AutoVerifiedAttributes:
         - email
@@ -81,15 +81,15 @@ Resources:
       CallbackURLs:
         - http://localhost:8000
         - !If
-            - DeployCloudFront
-            - !Sub "https://${CloudfrontDistribution.DomainName}"
-            - !Ref "AWS::NoValue"
+          - DeployCloudFront
+          - !Sub "https://${CloudfrontDistribution.DomainName}"
+          - !Ref "AWS::NoValue"
       LogoutURLs:
         - http://localhost:8000
         - !If
-            - DeployCloudFront
-            - !Sub "https://${CloudfrontDistribution.DomainName}"
-            - !Ref "AWS::NoValue"
+          - DeployCloudFront
+          - !Sub "https://${CloudfrontDistribution.DomainName}"
+          - !Ref "AWS::NoValue"
       AllowedOAuthFlows:
         - code
         - implicit
@@ -108,41 +108,35 @@ Resources:
       Domain: !Ref CognitoDomain
       UserPoolId: !Ref UserPool
 
-
   #-----------------------------------------------------
   # CloudFront Configuration
   #-----------------------------------------------------
 
   CloudFrontOriginAccessIdentity:
-    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Condition: DeployCloudFront
     Properties:
       CloudFrontOriginAccessIdentityConfig:
-        Comment: 'Serverless frontend website'
-
+        Comment: Serverless frontend website
   CloudfrontDistribution:
-    Type: "AWS::CloudFront::Distribution"
+    Type: AWS::CloudFront::Distribution
     Condition: DeployCloudFront
     Properties:
       DistributionConfig:
-        Comment: "Cloudfront distribution for serverless website"
-        DefaultRootObject: "index.html"
+        Comment: Cloudfront distribution for serverless website
+        DefaultRootObject: index.html
         Enabled: true
         HttpVersion: http2
         PriceClass: PriceClass_100
-        # List of origins that Cloudfront will connect to
         Origins:
           - Id: s3-website
-            DomainName: !Sub "${S3Bucket}.s3.us-east-2.amazonaws.com"
+            DomainName: ${S3Bucket}.s3.us-east-2.amazonaws.com
             OriginPath: /static
             S3OriginConfig:
-              # Restricting Bucket access through an origin access identity
               OriginAccessIdentity:
-                Fn::Sub: 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
-        # To connect the CDN to the origins you need to specify behaviours
+                Fn::Sub: origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}
         DefaultCacheBehavior:
-          # Compress resources automatically ( gzip )
-          Compress: 'true'
+          Compress: "true"
           AllowedMethods:
             - GET
             - HEAD
@@ -150,24 +144,23 @@ Resources:
           ForwardedValues:
             QueryString: false
           TargetOriginId: s3-website
-          ViewerProtocolPolicy : redirect-to-https
+          ViewerProtocolPolicy: redirect-to-https
           CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-
   S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Condition: DeployCloudFront
     Properties:
-      Bucket: !Ref S3Bucket
+      Bucket: S3Bucket
       PolicyDocument:
-        # Restricting access to cloudfront only.
         Statement:
-          -
-            Effect: Allow
-            Action: 's3:GetObject'
+          - Effect: Allow
+            Action: s3:GetObject
             Resource:
-              - !Sub "arn:aws:s3:::${S3Bucket}/*"
+              - arn:aws:s3:::${S3Bucket}/*
             Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
+              AWS: arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity
+                ${CloudFrontOriginAccessIdentity}
+
 
 
   #-----------------------------------------------------
@@ -181,8 +174,8 @@ Resources:
         - 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole'
         - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
       AssumeRolePolicyDocument:
-        Version: "2012-10-17" 
-        Statement: 
+        Version: "2012-10-17"
+        Statement:
           - Effect: Allow
             Principal:
               Service:
@@ -194,197 +187,202 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-                - cloudwatch:PutMetricData
-              Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - cloudwatch:PutMetricData
+                Resource: '*'
         - PolicyName: 'AccessUserTable'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
-              Action: dynamodb:*
-              Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/userTable"
-                
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/userTable"
+
         - PolicyName: 'AccessMessagesTable'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
-              Action: dynamodb:*
-              Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/messageTable" //TODO Change this to relevant table
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/messageTable"
 
   #-----------------------------------------------------
   # Lambda Functions Configuration
   #-----------------------------------------------------
 
-#  GetMessageHistoryByDateLambda:
-#    Type: AWS::Serverless::Function
-#    Properties:
-#      Role: !GetAtt AccessRole.Arn
-#      CodeUri: MusicPlaylistServiceLambda
-#      Handler: com.nashss.se.musicplaylistservice.lambda.GetMessageHistoryByDateLambda::handleRequest
-#      Runtime: java11
-#      Architectures:
-#        - x86_64
-#      MemorySize: 512
-#      Environment:
-#        Variables:
-#          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-#      Events:
-#        MusicPlaylistService:
-#          Type: Api
-#          Properties:
-#            Path: /playlists/{id}
-#            Method: get
-#            Auth:
-#              Authorizer: 'NONE'
+#    GetMessageHistoryByDateLambda:
+#      Type: AWS::Serverless::Function
+#      Properties:
+#        Role: !GetAtt AccessRole.Arn
+#        CodeUri: MusicPlaylistServiceLambda
+#        Handler: com.nashss.se.musicplaylistservice.lambda.GetMessageHistoryByDateLambda::handleRequest
+#        Runtime: java11
+#        Architectures:
+#          - x86_64
+#        MemorySize: 512
+#        Environment:
+#          Variables:
+#            JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+#        Events:
+#          MusicPlaylistService:
+#            Type: Api
+#            Properties:
+#              Path: /playlists/{id}
+#              Method: get
+#              Auth:
+#                Authorizer: 'NONE'
 #
-#  SearchPlaylistsLambda:
-#    Type: AWS::Serverless::Function
-#    Properties:
-#      Role: !GetAtt AccessRole.Arn
-#      CodeUri: MusicPlaylistServiceLambda
-#      Handler: com.nashss.se.musicplaylistservice.lambda.SearchPlaylistsLambda::handleRequest
-#      Runtime: java11
-#      Architectures:
-#        - x86_64
-#      MemorySize: 512
-#      Environment:
-#        Variables:
-#          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-#      Events:
-#        MusicPlaylistService:
-#          Type: Api
-#          Properties:
-#            Path: /playlists/search
-#            Method: get
-#            Auth:
-#              Authorizer: 'NONE'
+#    SearchPlaylistsLambda:
+#      Type: AWS::Serverless::Function
+#      Properties:
+#        Role: !GetAtt AccessRole.Arn
+#        CodeUri: MusicPlaylistServiceLambda
+#        Handler: com.nashss.se.musicplaylistservice.lambda.SearchPlaylistsLambda::handleRequest
+#        Runtime: java11
+#        Architectures:
+#          - x86_64
+#        MemorySize: 512
+#        Environment:
+#          Variables:
+#            JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+#        Events:
+#          MusicPlaylistService:
+#            Type: Api
+#            Properties:
+#              Path: /playlists/search
+#              Method: get
+#              Auth:
+#                Authorizer: 'NONE'
 #
-#  CreatePlaylistLambda:
-#    Type: AWS::Serverless::Function
-#    Properties:
-#      Role: !GetAtt AccessRole.Arn
-#      CodeUri: MusicPlaylistServiceLambda
-#      Handler: com.nashss.se.musicplaylistservice.lambda.CreatePlaylistLambda::handleRequest
-#      Runtime: java11
-#      Architectures:
-#        - x86_64
-#      MemorySize: 512
-#      Environment:
-#        Variables:
-#          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-#      Events:
-#        MusicPlaylistService:
-#          Type: Api
-#          Properties:
-#            Path: /playlists
-#            Method: post
+#    CreatePlaylistLambda:
+#      Type: AWS::Serverless::Function
+#      Properties:
+#        Role: !GetAtt AccessRole.Arn
+#        CodeUri: MusicPlaylistServiceLambda
+#        Handler: com.nashss.se.musicplaylistservice.lambda.CreatePlaylistLambda::handleRequest
+#        Runtime: java11
+#        Architectures:
+#          - x86_64
+#        MemorySize: 512
+#        Environment:
+#          Variables:
+#            JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+#        Events:
+#          MusicPlaylistService:
+#            Type: Api
+#            Properties:
+#              Path: /playlists
+#              Method: post
 #
-#  UpdatePlaylistLambda:
-#    Type: AWS::Serverless::Function
-#    Properties:
-#      Role: !GetAtt AccessRole.Arn
-#      CodeUri: MusicPlaylistServiceLambda
-#      Handler: com.nashss.se.musicplaylistservice.lambda.UpdatePlaylistLambda::handleRequest
-#      Runtime: java11
-#      Architectures:
-#        - x86_64
-#      MemorySize: 512
-#      Environment:
-#        Variables:
-#          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-#      Events:
-#        MusicPlaylistService:
-#          Type: Api
-#          Properties:
-#            Path: /playlists/{id}
-#            Method: put
+#    UpdatePlaylistLambda:
+#      Type: AWS::Serverless::Function
+#      Properties:
+#        Role: !GetAtt AccessRole.Arn
+#        CodeUri: MusicPlaylistServiceLambda
+#        Handler: com.nashss.se.musicplaylistservice.lambda.UpdatePlaylistLambda::handleRequest
+#        Runtime: java11
+#        Architectures:
+#          - x86_64
+#        MemorySize: 512
+#        Environment:
+#          Variables:
+#            JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+#        Events:
+#          MusicPlaylistService:
+#            Type: Api
+#            Properties:
+#              Path: /playlists/{id}
+#              Method: put
 #
-#  AddSongToPlaylistLambda:
-#    Type: AWS::Serverless::Function
-#    Properties:
-#      Role: !GetAtt AccessRole.Arn
-#      CodeUri: MusicPlaylistServiceLambda
-#      Handler: com.nashss.se.musicplaylistservice.lambda.AddSongToPlaylistLambda::handleRequest
-#      Runtime: java11
-#      Architectures:
-#        - x86_64
-#      MemorySize: 512
-#      Environment:
-#        Variables:
-#          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-#      Events:
-#        MusicPlaylistService:
-#          Type: Api
-#          Properties:
-#            Path: /playlists/{id}/songs
-#            Method: post
+#    AddSongToPlaylistLambda:
+#      Type: AWS::Serverless::Function
+#      Properties:
+#        Role: !GetAtt AccessRole.Arn
+#        CodeUri: MusicPlaylistServiceLambda
+#        Handler: com.nashss.se.musicplaylistservice.lambda.AddSongToPlaylistLambda::handleRequest
+#        Runtime: java11
+#        Architectures:
+#          - x86_64
+#        MemorySize: 512
+#        Environment:
+#          Variables:
+#            JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+#        Events:
+#          MusicPlaylistService:
+#            Type: Api
+#            Properties:
+#              Path: /playlists/{id}/songs
+#              Method: post
 
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
-  
+
   UserTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
-      TableName: userTable
-      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: userID
-          AttributeType: S
+        - AttributeName: "userID"
+          AttributeType: "S"
+        - AttributeName: "friendsList"
+          AttributeType: "S"
+        - AttributeName: "messageHistory"
+          AttributeType: "S"
       KeySchema:
-        - AttributeName: userID
-          KeyType: HASH
+        - AttributeName: "userID"
+          KeyType: "HASH"
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: "userTable"
       GlobalSecondaryIndexes:
-        - IndexName: friendsList-index
+        - IndexName: "friendsList-index"
           KeySchema:
-            - AttributeName: friendsList
-              KeyType: HASH
-        - IndexName: messageHistory-index
+            - AttributeName: "friendsList"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "messageHistory-index"
           KeySchema:
-            - AttributeName: messageHistory
-              KeyType: HASH
-    Projection:
-      ProjectionType: ALL
+            - AttributeName: "messageHistory"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
 
   MessageBoardTable:
-    Type: 'AWS::DynamoDB::Table'
+    Type: AWS::DynamoDB::Table
     Properties:
-      TableName: messageTable
-      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: messageID
-          AttributeType: S
-        - AttributeName: timeSent
-          AttributeType: S
-        - AttributeName: messageContent
-          AttributeType: S
-        - AttributeName: posterID
-          AttributeType: S
+        - AttributeName: "messageID"
+          AttributeType: "S"
+        - AttributeName: "timeSent"
+          AttributeType: "S"
+        - AttributeName: "posterID"
+          AttributeType: "S"
       KeySchema:
-        - AttributeName: messageID
-          KeyType: HASH
-        - AttributeName: timeSent
-          KeyType: RANGE
+        - AttributeName: "messageID"
+          KeyType: "HASH"
+        - AttributeName: "timeSent"
+          KeyType: "RANGE"
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: "messageTable"
       GlobalSecondaryIndexes:
-        - IndexName: messageID-index
+        - IndexName: "messageID-index"
           KeySchema:
-            - AttributeName: messageID
-              KeyType: HASH
-        - IndexName: posterID_timeSent-index
+            - AttributeName: "messageID"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "posterID_timeSent-index"
           KeySchema:
-            - AttributeName: messageHistory
-              KeyType: HASH
-            - AttributeName: timeSent
-              KeyType: RANGE
-    Projection:
-      ProjectionType: ALL
-
+            - AttributeName: "posterID"
+              KeyType: "HASH"
+            - AttributeName: "timeSent"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
 
 #-----------------------------------------------------
 # The outputs defined below will be printed
@@ -394,26 +392,25 @@ Resources:
 Outputs:
 
   CognitoUserPoolId:
-    Value: !Ref UserPool
-    Description: "The Cognito User Pool ID (COGNITO_USER_POOL_ID)."
+    Value: UserPool
+    Description: The Cognito User Pool ID (COGNITO_USER_POOL_ID).
   CognitoUserPoolClientId:
-    Value: !Ref UserPoolClient
-    Description: "The Cognito User Pool Client ID (COGNITO_USER_POOL_CLIENT_ID)."
+    Value: UserPoolClient
+    Description: The Cognito User Pool Client ID (COGNITO_USER_POOL_CLIENT_ID).
   CognitoDomain:
-    Value: !Sub "${CognitoDomain}.auth.us-east-2.amazoncognito.com"
-    Description: "The Cognito Domain (COGNITO_DOMAIN)."
-
+    Value: ${CognitoDomain}.auth.us-east-2.amazoncognito.com
+    Description: The Cognito Domain (COGNITO_DOMAIN).
   ApiBaseUrl:
-    Description: "API Gateway endpoint base URL for Prod stage (API_BASE_URL)."
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
-
+    Description: API Gateway endpoint base URL for Prod stage (API_BASE_URL).
+    Value: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
   CognitoRedirectSignin:
-    Description: "The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNIN)."
-    Value: !Sub "https://${CloudfrontDistribution.DomainName}"
+    Description: The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNIN).
+    Value: https://${CloudfrontDistribution.DomainName}
     Condition: DeployCloudFront
   CognitoRedirectSignout:
-    Description: "The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNOUT)."
-    Value: !Sub "https://${CloudfrontDistribution.DomainName}"
+    Description: The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNOUT).
+    Value: https://${CloudfrontDistribution.DomainName}
     Condition: DeployCloudFront
+
 
 
