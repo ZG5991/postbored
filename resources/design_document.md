@@ -17,14 +17,14 @@
 
 **as a user, I would like to be able to:**
 - create a unique account for myself
-- post messages to the main page
-- filter all messages by date
+- post messages to the main page, a message can have one topic. e.g. "food, music, general, etc."
+- view all messages on the main page chronologically by date
+- view all messages on the main page by selected topic
+- view my messages by date on a "my posts" page
 - edit messages that I have posted
 - delete messages I have posted
 
 **potential stretch goals/ideas:**
-- tag messages with specific topics
-- filter messages by topic
 - let me add users to a friends list
 - let me only see posts by friends
 
@@ -32,14 +32,14 @@
 
  **In Scope**
 
-- post message to the board
-- view all posted messages by date
-- edit a posted message
-- delete a posted message
+- post message to the main page board
+- view all posted messages by date and topic on a main page
+- view my own posted messages on a separate page
+- edit my posted message
+- delete my posted message
 
 **Out of Scope**
 - add and remove users from a friend list
-- adding topics and filtering by topics
 - filter posts by friends
 
 ## Proposed Architecture Overview
@@ -55,67 +55,69 @@ We will store completed exercise logs each in a table in DynamoDB.
 **User Model**
 
       User Model
-      String user_id
-      String friends_list
-      String message_history
+      String userEmail - email of the logged in user
+      String friendsList - list of this specific user's friends Emails
+      String messageHistory - a list of Message objects stored by their IDs
 
 **Messages Model**
 
-      String poster_user_id
-      String message_content
-      String message_id
-      String time_sent
-      String category
+      String userEmail - see above
+      String timeSent - LocalDateTime of when the message was originally posted or edited
+      String messageTitle - title of the message, entered when creating or editing 
+      String messageContent - main body of the message, entered when creating or editing
+      String messageID - Unique ID of the specific message generated when the message is created
+      String topic - topic ENUM to be selected when creating a new message, default to GENERAL
 
 ## PostMessage Endpoint
 
-    Accepts POST requests to /messageBoardTable
+    Accepts POST requests to /messages
+    From the main page
     Accepts data to create a new post on the messageboard with the required fields userID, messageContent, messageId, timeSent, and optional field category.
 
 Client sends create post form to Website New Post page. Website New Post page sends a create request to CreatePostMessageActivity. CreatePostMessageActivity saves updates to the message board database.
 
 ## GetMessageHistoryByDate Endpoint
 
-    Accepts GET requests to /messageBoardTable
-    Accepts a timeSent and returns the list of message board post objects in chronological order.
+    Accepts GET requests to /messages
+    From the main page
+    Accepts startTime + endTime and returns the list of message board post objects in ascending order by date/time.
 
 Client sends get messages form to Website Message Board page. Website Message Board page sends a get request to getMessagesByDateActivity. getMessagesByDateActivity obtains list of messages from database.
 ## EditMessage Endpoint
 
-    Accepts PUT requests to /messageBoard/:message_id
-    Accepts a messageID and edits existing messageContent for the specified user
+    Accepts PUT requests to /messages/:message_id
+    From the user posts page, allows the logged in user to edit a message by
+      messageID, changing existing messageContent for the specified post
 
 ## DeleteMessage Endpoint
 
-    Accepts DELETE requests to /workouts/:workout_id
-    Accepts a workoutId and deletes existing WorkoutLog for the specified customer
+    Accepts DELETE requests to /messages/:message_id
+    Reads userID of current user, then accepts the messageID of the selected message on the user posts page
+      and deletes that message, removing it from the table
 
 ## Tables
 
 
    **userTable**
 
-      String userID (Primary Key ) - UUID
-      String friendsList (GSI) - GSI containing a list of that users friendsIDs, stored as a String
-      String messageHistory (GSI) - GSI containing a user's messageIDs to query, stored as a String
+      String userID (Primary Key ) - user's email
+      String friendsList -  list of that users friendsIDs, stored as a String
+      String messageHistory (GSI) - GSI containing a user's messageIDs to query the message table
 
       Indeces -
-      friends_list-index //  Partition key user_id
-      message_history-index //  Partition key  message_id
-      date-index // Partition key date
-
-
+      message_history-index //  Partition key  message_id, list of the poster's messages by id to query from user post page
 
    **messageBoardTable**
       
       String messageID - HASH key UUID for the specific chatroom
       String timeSent - (Converted from LocalDateTime) - SORT key to view all messages in order
+      String messageTitle - title of the message, limited to x chars
       String messageContent  - main body of the message, limit to x characters.
       String posterID - unique ID of the user who posted this message
+      String topic - topic of the specific message
 
       Indeces -
-      messageID-index - HASH: messageID
-      posterID_timeSent-index - HASH: posterID SORT: timeSent
+      topic-index - HASH: topics by which to query from the main page
 
 ## Pages
 
