@@ -119,7 +119,12 @@ Client sends get messages form to Website Message Board page. Website Message Bo
       Indeces -
       topic-index - HASH: topics by which to query from the main page
 
-## Pages
+## Pages wireframes
 
-//diagram to be inserted upon completion
+![image](https://github.com/ZG5991/postbored/assets/92684029/010d25de-e4dc-4366-ba00-eca5d4a99e8b)
+![image](https://github.com/ZG5991/postbored/assets/92684029/7f00a3d1-a436-4e4a-94bc-9076b1bfae42)
+![image](https://github.com/ZG5991/postbored/assets/92684029/d20b8fcd-7340-48bd-98af-be0a907e8d8e)
+
+
+
  
