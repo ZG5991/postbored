@@ -1,16 +1,11 @@
 package postbored.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import postbored.dynamodb.models.User;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Accesses data for a user using {@link User} to represent the model in DynamoDB.
@@ -55,7 +50,7 @@ public class UserDao {
                     String.format("Could not find user with userID '%s'", userID));
         }
 
-        return List.of(user.getFriendsList().split(","));
+        return List.of(user.getCommentHistory().split(","));
     }
 
     public List<String> getUserMessageHistory(String userID) {
@@ -65,6 +60,6 @@ public class UserDao {
                     String.format("Could not find user with userID '%s'", userID));
         }
 
-        return List.of(user.getMessageHistory().split(","));
+        return List.of(user.getPostHistory().split(","));
     }
 }

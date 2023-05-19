@@ -9,13 +9,12 @@ import java.util.StringJoiner;
 /**
  * Represents a record in the album_tracks table.
  */
-@DynamoDBTable(tableName = "userTable")
+@DynamoDBTable(tableName = "users")
 public class User {
 
     private String userID;
-    private List<String> friendsList;
-    private List<String> messageHistory;
-
+    private List<String> postHistory;
+    private List<String> commentHistory;
     @DynamoDBHashKey(attributeName = "userID")
     public String getUserID() {
         return userID;
@@ -25,24 +24,22 @@ public class User {
         this.userID = userID;
     }
 
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "friendsList-index", attributeName = "friendsList")
-    @DynamoDBAttribute(attributeName = "friendsList")
-    public String getFriendsList() {
-        return convertListToString(friendsList);
+    @DynamoDBAttribute(attributeName = "commentHistory")
+    public String getCommentHistory() {
+        return convertListToString(commentHistory);
     }
 
-    public void setFriendsList(List<String> friendsList) {
-        this.friendsList = friendsList;
+    public void setCommentHistory(List<String> commentHistory) {
+        this.commentHistory = commentHistory;
     }
 
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "messageHistory-index", attributeName = "messageHistory")
-    @DynamoDBAttribute(attributeName = "messageHistory")
-    public String getMessageHistory() {
-        return convertListToString(messageHistory);
+    @DynamoDBAttribute(attributeName = "postHistory")
+    public String getPostHistory() {
+        return convertListToString(postHistory);
     }
 
-    public void setMessageHistory(List<String> messageHistory) {
-        this.messageHistory = messageHistory;
+    public void setPostHistory(List<String> postHistory) {
+        this.postHistory = postHistory;
     }
 
     public String convertListToString(List<String> stringList) {
@@ -62,11 +59,11 @@ public class User {
             return false;
         }
         User user = (User) o;
-        return Objects.equals(userID, user.userID) && Objects.equals(friendsList, user.friendsList) && Objects.equals(messageHistory, user.messageHistory);
+        return Objects.equals(userID, user.userID) && Objects.equals(commentHistory, user.commentHistory) && Objects.equals(postHistory, user.postHistory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userID, friendsList, messageHistory);
+        return Objects.hash(userID, commentHistory, postHistory);
     }
 }
