@@ -23,24 +23,31 @@
 - view my messages by date on a "my posts" page
 - edit messages that I have posted
 - delete messages I have posted
-
-**potential stretch goals/ideas:**
-- let me add users to a friends list
-- let me only see posts by friends
+- comment on other user's posts
+- view my comment history
+- edit my comments
+- delete my comments
+- search posts, comments, or users by keyword(stretch goal)
+- Like and dislike posts (stretch goal)
 
 ## Project Scope
 
  **In Scope**
 
 - post message to the main page board
-- view all posted messages by date and topic on a main page
-- view my own posted messages on a separate page
+- view all posted messages by date, ascending or descending
+- filter all posts by topic on a main page
+- view my own posted messages and comments on a separate page
 - edit my posted message
 - delete my posted message
+- comment on posts
+- edit my comments
+- delete my comments
 
-**Out of Scope**
-- add and remove users from a friend list
-- filter posts by friends
+ **Out of Scope**
+
+- search by keyword
+- like/dislike button
 
 ## Proposed Architecture Overview
 
@@ -56,68 +63,120 @@ We will store completed exercise logs each in a table in DynamoDB.
 
       User Model
       String userEmail - email of the logged in user
-      String friendsList - list of this specific user's friends Emails
-      String messageHistory - a list of Message objects stored by their IDs
+      List<String> postHistory - a list of Post objects stored by their IDs
+      List<String> commentHistory - a list of Comment objects stored by their IDs
 
-**Messages Model**
+**Post Model**
 
-      String userEmail - see above
+      String postingUserEmail - see above
       String timeSent - LocalDateTime of when the message was originally posted or edited
-      String messageTitle - title of the message, entered when creating or editing 
-      String messageContent - main body of the message, entered when creating or editing
-      String messageID - Unique ID of the specific message generated when the message is created
+      String postTitle - title of the message, entered when creating or editing 
+      String postContent - main body of the message, entered when creating or editing
+      String postID - Unique ID of the specific message generated when the message is created
       String topic - topic ENUM to be selected when creating a new message, default to GENERAL
 
-## PostMessage Endpoint
+**Comment Model**
 
-    Accepts POST requests to /messages
+      String commentingUserEmail - see above
+      String timeSent - LocalDateTime of when the comment was originally posted or edited
+      String commentContent - main body of the comment, entered when creating or editing
+      String commentID - Unique ID of the specific comment generated when the message is created
+      String postID - see above
+
+## Post-A-Post Endpoint
+
+    Accepts POST requests to /posts
     From the main page
     Accepts data to create a new post on the messageboard with the required fields userID, messageContent, messageId, timeSent, and optional field category.
 
 Client sends create post form to Website New Post page. Website New Post page sends a create request to CreatePostMessageActivity. CreatePostMessageActivity saves updates to the message board database.
 
-## GetMessageHistoryByDate Endpoint
+## GetPostHistoryByDate Endpoint
 
-    Accepts GET requests to /messages
+    Accepts GET requests to /postHistory-index
     From the main page
-    Accepts startTime + endTime and returns the list of message board post objects in ascending order by date/time.
+    Accepts startDate + endDate and returns the list of message board post objects in ascending order by date.
+      Client sends get messages form to Website Message Board page. Website Message Board page sends a get request to getMessagesByDateActivity. getMessagesByDateActivity obtains list of messages from database.
 
-Client sends get messages form to Website Message Board page. Website Message Board page sends a get request to getMessagesByDateActivity. getMessagesByDateActivity obtains list of messages from database.
-## EditMessage Endpoint
+## GetPostHistoryByTopic Endpoint
 
-    Accepts PUT requests to /messages/:message_id
-    From the user posts page, allows the logged in user to edit a message by
+    Accepts GET requests to /topic-index
+    From the main page
+    Accepts a :topic and returns the list of message board post objects in ascending order by relevant topic.
+
+
+## EditPost Endpoint
+
+    Accepts PUT requests to /posts/:postID
+    From the user content page, allows the logged in user to edit a message by
       messageID, changing existing messageContent for the specified post
 
-## DeleteMessage Endpoint
+## DeletePost Endpoint
 
-    Accepts DELETE requests to /messages/:message_id
-    Reads userID of current user, then accepts the messageID of the selected message on the user posts page
+    Accepts DELETE requests to /posts/:postID
+    Reads userID of current user, then accepts the postID of the selected message on the user content page
       and deletes that message, removing it from the table
+
+## PostComment Endpoint
+
+    Accepts POST requests to /comments/
+    From the main page
+    Accepts data to create a new post on the messageboard with the required fields userID, messageContent, messageId, timeSent, and optional field category.
+
+## GetCommentsByDate Endpoint
+
+    Accepts GET requests to /commentHistory-index
+    From the main page
+    Accepts startTime + endTime and returns the list of message board post objects in descending order under the relevant post.
+    the User should be seeing the comments oldest first.
+
+## EditComment Endpoint
+
+    Accepts PUT requests to /comments/:commentID
+    From the user content page, allows the logged in user to edit a comment by
+      commentID, changing existing messageContent for the specified post
+
+## DeleteComment Endpoint
+
+    Accepts DELETE requests to /posts/:commentID
+    Reads userID of current user, then accepts the commentID of the selected comment on the user content page
+      and deletes that message, removing it from the table
+
 
 ## Tables
 
 
-   **userTable**
+   **users**
 
       String userID (Primary Key ) - user's email
-      String friendsList -  list of that users friendsIDs, stored as a String
-      String messageHistory (GSI) - GSI containing a user's messageIDs to query the message table
+      List<String> postHistory - list containing a user's messageIDs to query the message table
+      List<String> commentHistory - list containing a user's messageIDs to query the message table
 
-      Indeces -
-      message_history-index //  Partition key  message_id, list of the poster's messages by id to query from user post page
-
-   **messageBoardTable**
+   **posts**
       
-      String messageID - HASH key UUID for the specific chatroom
-      String timeSent - (Converted from LocalDateTime) - SORT key to view all messages in order
-      String messageTitle - title of the message, limited to x chars
-      String messageContent  - main body of the message, limit to x characters.
-      String posterID - unique ID of the user who posted this message
+      String postID - HASH key UUID for the specific message
+      String timeSent - (Converted from LocalDateTime) - sort key
+      String postTitle - title of the message, limited to x chars
+      String postBody  - main body of the message, limit to x characters.
+      String posterID - email of the poster
       String topic - topic of the specific message
+      List<String> comments - a list of commentIDs for the specific post
+      Integer likesCounter - number of users who liked the post, dislikes lower the score
 
       Indeces -
-      topic-index - HASH: topics by which to query from the main page
+      post-time-index - HASH postID, SORT TimeSent - list of the user's posts by id to query from user post page
+      topic-index - HASH topic, SORT TimeSent
+      post-comments-index - HASH postID, SORT timeSent - query the comments of a specific post
+
+   **comments**
+   
+      String commentID - HASH key UUID for the specific message
+      String timeSent - (Converted from LocalDateTime), use the Time over Date when sorting in order
+      String commentContent  - main body of the comment, limit to x characters.
+      String commenterID - email of the user who is commenting
+      String postID - the specific post being commented on
+
+      
 
 ## Pages wireframes
 
@@ -125,6 +184,5 @@ Client sends get messages form to Website Message Board page. Website Message Bo
 ![image](https://github.com/ZG5991/postbored/assets/92684029/7f00a3d1-a436-4e4a-94bc-9076b1bfae42)
 ![image](https://github.com/ZG5991/postbored/assets/92684029/d20b8fcd-7340-48bd-98af-be0a907e8d8e)
 
-
-
+//diagram to be inserted upon completion
  
