@@ -200,15 +200,23 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/userTable"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/users"
 
-        - PolicyName: 'AccessMessagesTable'
+        - PolicyName: 'AccessPostsTable'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/messageTable"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/posts"
+
+        - PolicyName: 'AccessCommentsTable'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/comments"
 
   #-----------------------------------------------------
   # Lambda Functions Configuration
@@ -328,10 +336,6 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "userID"
           AttributeType: "S"
-        - AttributeName: "postHistory"
-          AttributeType: "S"
-        - AttributeName: "commentHistory"
-          AttributeType: "S"
       KeySchema:
         - AttributeName: "userID"
           KeyType: "HASH"
@@ -345,12 +349,6 @@ Resources:
         - AttributeName: "commentID"
           AttributeType: "S"
         - AttributeName: "timeSent"
-          AttributeType: "S"
-        - AttributeName: "commentContent"
-          AttributeType: "S"
-        - AttributeName: "commenterID"
-          AttributeType: "S"
-        - AttributeName: "postID"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "commentID"
@@ -368,18 +366,10 @@ Resources:
           AttributeType: "S"
         - AttributeName: "timeSent"
           AttributeType: "S"
-        - AttributeName: "postTitle"
-          AttributeType: "S"
-        - AttributeName: "postBody"
-          AttributeType: "S"
-        - AttributeName: "posterID"
-          AttributeType: "S"
         - AttributeName: "topic"
           AttributeType: "S"
         - AttributeName: "comments"
           AttributeType: "S"
-        - AttributeName: "likesCounter"
-          AttributeType: "N"
       KeySchema:
         - AttributeName: "postID"
           KeyType: "HASH"
