@@ -355,29 +355,47 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "messageID"
+        - AttributeName: "postID"
           AttributeType: "S"
         - AttributeName: "timeSent"
+          AttributeType: "S"
+        - AttributeName: "postTitle"
+          AttributeType: "S"
+        - AttributeName: "postBody"
           AttributeType: "S"
         - AttributeName: "posterID"
           AttributeType: "S"
+        - AttributeName: "topic"
+          AttributeType: "S"
+        - AttributeName: "comments"
+          AttributeType: "S"
+        - AttributeName: "likesCounter"
+          AttributeType: "N"
       KeySchema:
-        - AttributeName: "messageID"
+        - AttributeName: "postID"
           KeyType: "HASH"
-        - AttributeName: "timeSent"
-          KeyType: "RANGE"
       BillingMode: "PAY_PER_REQUEST"
-      TableName: "messageTable"
+      TableName: "posts"
       GlobalSecondaryIndexes:
-        - IndexName: "messageID-index"
+        - IndexName: "post-time-index"
           KeySchema:
-            - AttributeName: "messageID"
+            - AttributeName: "postID"
               KeyType: "HASH"
+            - AttributeName: "timeSent"
+              KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
-        - IndexName: "posterID_timeSent-index"
+        - IndexName: "topic-index"
           KeySchema:
-            - AttributeName: "posterID"
+            - AttributeName: "topic"
+              KeyType: "HASH"
+            - AttributeName: "timeSent"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "post-comments-index"
+          KeySchema:
+            - AttributeName: "comments"
               KeyType: "HASH"
             - AttributeName: "timeSent"
               KeyType: "RANGE"
