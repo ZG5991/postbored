@@ -3,10 +3,10 @@
 
  ## **Problem Statement**
 
-   PostBored is a public message board application for people passionate about sharing ideas.
+   PostBored is a public post board application for people passionate about sharing ideas.
    The goal is to provide an easy to use, responsive web application to allow users to post thier thoughts freely.
    This application should allow users to create and maintain a personal account,
-   post to a public message board, and view posts by other users easily.
+   post to a public post board, and view posts by other users easily.
 
  ## **Top Questions to Resolve in Review**
 
@@ -17,7 +17,7 @@
 
 **as a user, I would like to be able to:**
 - create a unique account for myself
-- post messages to the main page, a message can have one topic. e.g. "food, music, general, etc."
+- post messages to the main page, a post can have one topic. e.g. "food, music, general, etc."
 - view all messages on the main page chronologically by date
 - view all messages on the main page by selected topic
 - view my messages by date on a "my posts" page
@@ -34,12 +34,12 @@
 
  **In Scope**
 
-- post message to the main page board
+- post post to the main page board
 - view all posted messages by date, ascending or descending
 - filter all posts by topic on a main page
 - view my own posted messages and comments on a separate page
-- edit my posted message
-- delete my posted message
+- edit my posted post
+- delete my posted post
 - comment on posts
 - edit my comments
 - delete my comments
@@ -69,18 +69,18 @@ We will store completed exercise logs each in a table in DynamoDB.
 **Post Model**
 
       String postingUserEmail - see above
-      String timeSent - LocalDateTime of when the message was originally posted or edited
-      String postTitle - title of the message, entered when creating or editing 
-      String postContent - main body of the message, entered when creating or editing
-      String postID - Unique ID of the specific message generated when the message is created
-      String topic - topic ENUM to be selected when creating a new message, default to GENERAL
+      String timeSent - LocalDateTime of when the post was originally posted or edited
+      String postTitle - title of the post, entered when creating or editing 
+      String postContent - main body of the post, entered when creating or editing
+      String postID - Unique ID of the specific post generated when the post is created
+      String topic - topic ENUM to be selected when creating a new post, default to GENERAL
 
 **Comment Model**
 
       String commentingUserEmail - see above
       String timeSent - LocalDateTime of when the comment was originally posted or edited
       String commentContent - main body of the comment, entered when creating or editing
-      String commentID - Unique ID of the specific comment generated when the message is created
+      String commentID - Unique ID of the specific comment generated when the post is created
       String postID - see above
 
 ## Post-A-Post Endpoint
@@ -89,33 +89,33 @@ We will store completed exercise logs each in a table in DynamoDB.
     From the main page
     Accepts data to create a new post on the messageboard with the required fields userID, messageContent, messageId, timeSent, and optional field category.
 
-Client sends create post form to Website New Post page. Website New Post page sends a create request to CreatePostMessageActivity. CreatePostMessageActivity saves updates to the message board database.
+Client sends create post form to Website New Post page. Website New Post page sends a create request to CreatePostMessageActivity. CreatePostMessageActivity saves updates to the post board database.
 
 ## GetPostHistoryByDate Endpoint
 
     Accepts GET requests to /postHistory-index
     From the main page
-    Accepts startDate + endDate and returns the list of message board post objects in ascending order by date.
+    Accepts startDate + endDate and returns the list of post board post objects in ascending order by date.
       Client sends get messages form to Website Message Board page. Website Message Board page sends a get request to getMessagesByDateActivity. getMessagesByDateActivity obtains list of messages from database.
 
 ## GetPostHistoryByTopic Endpoint
 
     Accepts GET requests to /topic-index
     From the main page
-    Accepts a :topic and returns the list of message board post objects in ascending order by relevant topic.
+    Accepts a :topic and returns the list of post board post objects in ascending order by relevant topic.
 
 
 ## EditPost Endpoint
 
     Accepts PUT requests to /posts/:postID
-    From the user content page, allows the logged in user to edit a message by
+    From the user content page, allows the logged in user to edit a post by
       messageID, changing existing messageContent for the specified post
 
 ## DeletePost Endpoint
 
     Accepts DELETE requests to /posts/:postID
-    Reads userID of current user, then accepts the postID of the selected message on the user content page
-      and deletes that message, removing it from the table
+    Reads userID of current user, then accepts the postID of the selected post on the user content page
+      and deletes that post, removing it from the table
 
 ## PostComment Endpoint
 
@@ -127,7 +127,7 @@ Client sends create post form to Website New Post page. Website New Post page se
 
     Accepts GET requests to /commentHistory-index
     From the main page
-    Accepts startTime + endTime and returns the list of message board post objects in descending order under the relevant post.
+    Accepts startTime + endTime and returns the list of post board post objects in descending order under the relevant post.
     the User should be seeing the comments oldest first.
 
 ## EditComment Endpoint
@@ -140,7 +140,7 @@ Client sends create post form to Website New Post page. Website New Post page se
 
     Accepts DELETE requests to /posts/:commentID
     Reads userID of current user, then accepts the commentID of the selected comment on the user content page
-      and deletes that message, removing it from the table
+      and deletes that post, removing it from the table
 
 
 ## Tables
@@ -149,33 +149,33 @@ Client sends create post form to Website New Post page. Website New Post page se
    **users**
 
       String userID (Primary Key ) - user's email
-      List<String> postHistory - list containing a user's messageIDs to query the message table
-      List<String> commentHistory - list containing a user's messageIDs to query the message table
+      List<String> postHistory - list containing a user's messageIDs to query the post table
+      List<String> commentHistory - list containing a user's messageIDs to query the post table
 
    **posts**
       
-      String postID - HASH key UUID for the specific message
+      String postID - HASH key UUID for the specific post
       String timeSent - (Converted from LocalDateTime) - sort key
-      String postTitle - title of the message, limited to x chars
-      String postBody  - main body of the message, limit to x characters.
+      String postTitle - title of the post, limited to x chars
+      String postBody  - main body of the post, limit to x characters.
       String posterID - email of the poster
-      String topic - topic of the specific message
+      String topic - topic of the specific post
       List<String> comments - a list of commentIDs for the specific post
       Integer likesCounter - number of users who liked the post, dislikes lower the score
 
       Indeces -
       post-time-index - HASH postID, SORT TimeSent - list of the user's posts by id to query from user post page
       topic-index - HASH topic, SORT TimeSent
-      post-comments-index - HASH postID, SORT timeSent - query the comments of a specific post
+      post-comments-index - HASH comments, SORT timeSent - query the comments of a specific post
 
    **comments**
    
-      String commentID - HASH key UUID for the specific message
+      String commentID - HASH key UUID for the specific post
       String timeSent - (Converted from LocalDateTime), use the Time over Date when sorting in order
       String commentContent  - main body of the comment, limit to x characters.
       String commenterID - email of the user who is commenting
       String postID - the specific post being commented on
-
+     
       
 
 ## Pages wireframes

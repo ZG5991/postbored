@@ -3,7 +3,7 @@ package postbored.dynamodb;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import postbored.dynamodb.models.Message;
+import postbored.dynamodb.models.Post;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +12,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Accesses data for a playlist using {@link Message} to represent the model in DynamoDB.
+ * Accesses data for a playlist using {@link Post} to represent the model in DynamoDB.
  */
 @Singleton
-public class MessageDao {
+public class PostDao {
     private final DynamoDBMapper dynamoDbMapper;
 
     /**
@@ -25,35 +25,35 @@ public class MessageDao {
      *
      */
     @Inject
-    public MessageDao(DynamoDBMapper dynamoDbMapper) {
+    public PostDao(DynamoDBMapper dynamoDbMapper) {
         this.dynamoDbMapper = dynamoDbMapper;
     }
 
     /**
-     * Returns the {@link postbored.dynamodb.models.Message} corresponding to the specified id.
+     * Returns the {@link Post} corresponding to the specified id.
      *
      * @param id the Message ID
      * @return the stored Playlist, or null if none was found.
      */
-    public Message getMessage(String id) {
-        Message message = this.dynamoDbMapper.load(Message.class, id);
+    public Post getPost(String id) {
+        Post post = this.dynamoDbMapper.load(Post.class, id);
 
-        if (message == null) {
+        if (post == null) {
             throw new IllegalArgumentException("Could not find message with id " + id);
         }
 
-        return message;
+        return post;
     }
 
     /**
      * Saves (creates or updates) the given playlist.
      *
-     * @param message The playlist to save
+     * @param post The playlist to save
      * @return The Playlist object that was saved
      */
-    public Message saveMessage(Message message) {
-        this.dynamoDbMapper.save(message);
-        return message;
+    public Post savePost(Post post) {
+        this.dynamoDbMapper.save(post);
+        return post;
     }
 
     /**
@@ -67,7 +67,7 @@ public class MessageDao {
      * @param criteria an array of String containing search criteria.
      * @return a List of Playlist objects that match the search criteria.
      */
-    public List<Message> searchMessages(String[] criteria) {
+    public List<Post> searchPosts(String[] criteria) {
         DynamoDBScanExpression dynamoDBScanExpression = new DynamoDBScanExpression();
 
         if (criteria.length > 0) {
@@ -91,7 +91,7 @@ public class MessageDao {
                     "(" + nameFilterExpression + ") or (" + tagsFilterExpression + ")");
         }
 
-        return this.dynamoDbMapper.scan(Message.class, dynamoDBScanExpression);
+        return this.dynamoDbMapper.scan(Post.class, dynamoDBScanExpression);
     }
 
     private StringBuilder filterExpressionPart(String target, String valueMapNamePrefix, int position) {
