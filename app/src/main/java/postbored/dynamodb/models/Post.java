@@ -1,6 +1,7 @@
 package postbored.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import postbored.utilities.ListConverter;
 import postbored.utilities.LocalDateTimeConverter;
 
 import java.time.LocalDateTime;
@@ -10,10 +11,11 @@ import java.util.Objects;
 /**
  * Represents a record in the playlists table.
  */
+
 @DynamoDBTable(tableName = "posts")
 public class Post {
 
-    private final LocalDateTimeConverter converter = new LocalDateTimeConverter();
+    public LocalDateTimeConverter converter;
 
     private String postID;
     private LocalDateTime dateSent;
@@ -91,6 +93,7 @@ public class Post {
     }
 
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "post-comments-index", attributeName = "comments")
+    @DynamoDBTypeConverted(converter = ListConverter.class)
     public List<String> getComments() {
         return comments;
     }

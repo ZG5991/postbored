@@ -1,6 +1,7 @@
 package postbored.dependency;
 
 import dagger.Component;
+import postbored.activity.NewPostActivity;
 
 import javax.inject.Singleton;
 
@@ -11,12 +12,12 @@ import javax.inject.Singleton;
 @Component(modules = {DaoModule.class})
 public interface ServiceComponent {
 
-//    /**
-//     * Provides the relevant activity.
-//     * @return AddSongToPlaylistActivity
-//     */
-//    AddSongToPlaylistActivity provideAddSongToPlaylistActivity();
-//
+    /**
+     * Provides the relevant activity.
+     * @return NewPostActivity
+     */
+    NewPostActivity provideNewPostActivity();
+
 //    /**
 //     * Provides the relevant activity.
 //     * @return CreatePlaylistActivity
