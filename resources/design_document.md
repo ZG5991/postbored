@@ -59,31 +59,29 @@ We will store completed exercise logs each in a table in DynamoDB.
 
 ## API
 
-**User Model**
-
-      User Model
-      String userEmail - email of the logged in user
-      List<String> postHistory - a list of Post objects stored by their IDs
-      List<String> commentHistory - a list of Comment objects stored by their IDs
-
 **Post Model**
 
-      String postingUserEmail - see above
-      String timeSent - LocalDateTime of when the post was originally posted or edited
+      String posterID - cognito email of the poster
+      String posterName - display name of the poster
+      LocalDateTime datePosted - LocalDateTime of when the post was originally posted or edited
       String postTitle - title of the post, entered when creating or editing 
       String postContent - main body of the post, entered when creating or editing
       String postID - Unique ID of the specific post generated when the post is created
       String topic - topic ENUM to be selected when creating a new post, default to GENERAL
+      Integer likesCounter - number of 'likes' on the post
+      List<String> - comments - list of commentIDs tied to this post
+
 
 **Comment Model**
 
-      String commentingUserEmail - see above
-      String timeSent - LocalDateTime of when the comment was originally posted or edited
-      String commentContent - main body of the comment, entered when creating or editing
       String commentID - Unique ID of the specific comment generated when the post is created
-      String postID - see above
+      String commenterID - cognito email of the commenter
+      String commenterName - display name of the commenter 
+      String commentContent - main body of the comment, entered when creating or editing
+      LocalDateTime timePosted - LocalDateTime of when the comment was originally posted or edited
+     
 
-## Post-A-Post Endpoint
+## NewPost Endpoint
 
     Accepts POST requests to /posts
     From the main page
@@ -91,14 +89,14 @@ We will store completed exercise logs each in a table in DynamoDB.
 
 Client sends create post form to Website New Post page. Website New Post page sends a create request to CreatePostMessageActivity. CreatePostMessageActivity saves updates to the post board database.
 
-## GetPostHistoryByDate Endpoint
+## GetPostByDate Endpoint
 
     Accepts GET requests to /postHistory-index
     From the main page
     Accepts startDate + endDate and returns the list of post board post objects in ascending order by date.
       Client sends get messages form to Website Message Board page. Website Message Board page sends a get request to getMessagesByDateActivity. getMessagesByDateActivity obtains list of messages from database.
 
-## GetPostHistoryByTopic Endpoint
+## GetPostByTopic Endpoint
 
     Accepts GET requests to /topic-index
     From the main page
@@ -117,40 +115,33 @@ Client sends create post form to Website New Post page. Website New Post page se
     Reads userID of current user, then accepts the postID of the selected post on the user content page
       and deletes that post, removing it from the table
 
-## PostComment Endpoint
+## NewComment Endpoint
 
     Accepts POST requests to /comments/
     From the main page
     Accepts data to create a new post on the messageboard with the required fields userID, messageContent, messageId, timeSent, and optional field category.
 
-## GetCommentsByDate Endpoint
+## GetPostComments Endpoint
 
-    Accepts GET requests to /commentHistory-index
+    Accepts GET requests to /posts/comments
     From the main page
-    Accepts startTime + endTime and returns the list of post board post objects in descending order under the relevant post.
+    Accepts postID and returns the list of comments associated in order by time under the relevant post.
     the User should be seeing the comments oldest first.
 
 ## EditComment Endpoint
 
-    Accepts PUT requests to /comments/:commentID
+    Accepts PUT requests to /comments/:commentContent
     From the user content page, allows the logged in user to edit a comment by
-      commentID, changing existing messageContent for the specified post
+      commentID, changing existing body for the specified post
 
 ## DeleteComment Endpoint
 
-    Accepts DELETE requests to /posts/:commentID
+    Accepts DELETE requests to /comments/:commentID
     Reads userID of current user, then accepts the commentID of the selected comment on the user content page
       and deletes that post, removing it from the table
 
 
 ## Tables
-
-
-   **users**
-
-      String userID (Primary Key ) - user's email
-      List<String> postHistory - list containing a user's messageIDs to query the post table
-      List<String> commentHistory - list containing a user's messageIDs to query the post table
 
    **posts**
       
@@ -159,6 +150,7 @@ Client sends create post form to Website New Post page. Website New Post page se
       String postTitle - title of the post, limited to x chars
       String postBody  - main body of the post, limit to x characters.
       String posterID - email of the poster
+      String posterName - display name of poster
       String topic - topic of the specific post
       List<String> comments - a list of commentIDs for the specific post
       Integer likesCounter - number of users who liked the post, dislikes lower the score

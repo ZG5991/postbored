@@ -194,14 +194,6 @@ Resources:
                   - logs:PutLogEvents
                   - cloudwatch:PutMetricData
                 Resource: '*'
-        - PolicyName: 'AccessUserTable'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/users"
-
         - PolicyName: 'AccessPostsTable'
           PolicyDocument:
             Version: '2012-10-17'
@@ -329,18 +321,6 @@ Resources:
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
-
-  UserTable:
-    Type: 'AWS::DynamoDB::Table'
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: "userID"
-          AttributeType: "S"
-      KeySchema:
-        - AttributeName: "userID"
-          KeyType: "HASH"
-      BillingMode: "PAY_PER_REQUEST"
-      TableName: "users"
 
   CommentTable:
     Type: 'AWS::DynamoDB::Table'

@@ -18,6 +18,7 @@ public class Post {
     private String postTitle;
     private String postBody;
     private String posterID;
+    private String posterName;
     private String topic;
     private List<String> comments;
     private Integer likesCounter;
@@ -68,6 +69,15 @@ public class Post {
 
     public void setPosterID(String posterID) {
         this.posterID = posterID;
+    }
+
+    @DynamoDBAttribute(attributeName = "posterName")
+    public String getPosterName() {
+        return posterName;
+    }
+
+    public void setPosterName(String posterName) {
+        this.posterName = posterName;
     }
 
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "topic-index", attributeName = "topic")
