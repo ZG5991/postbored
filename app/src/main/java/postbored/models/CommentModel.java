@@ -54,7 +54,7 @@ public class CommentModel {
         return Objects.hash(commentID, timeSent, commentContent, commenterID, postID);
     }
 
-    public static Builder build() { return new Builder(); }
+    public static Builder builder() { return new Builder(); }
 
     public static class Builder {
 

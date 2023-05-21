@@ -344,7 +344,7 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "postID"
           AttributeType: "S"
-        - AttributeName: "timeSent"
+        - AttributeName: "dateSent"
           AttributeType: "S"
         - AttributeName: "topic"
           AttributeType: "S"
@@ -356,11 +356,11 @@ Resources:
       BillingMode: "PAY_PER_REQUEST"
       TableName: "posts"
       GlobalSecondaryIndexes:
-        - IndexName: "post-time-index"
+        - IndexName: "post-date-index"
           KeySchema:
             - AttributeName: "postID"
               KeyType: "HASH"
-            - AttributeName: "timeSent"
+            - AttributeName: "dateSent"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
@@ -368,7 +368,7 @@ Resources:
           KeySchema:
             - AttributeName: "topic"
               KeyType: "HASH"
-            - AttributeName: "timeSent"
+            - AttributeName: "dateSent"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
@@ -376,7 +376,7 @@ Resources:
           KeySchema:
             - AttributeName: "comments"
               KeyType: "HASH"
-            - AttributeName: "timeSent"
+            - AttributeName: "dateSent"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"

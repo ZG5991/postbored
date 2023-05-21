@@ -1,9 +1,9 @@
 package postbored.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import postbored.utilities.LocalDateTimeConverter;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,8 +13,10 @@ import java.util.Objects;
 @DynamoDBTable(tableName = "posts")
 public class Post {
 
+    private final LocalDateTimeConverter converter = new LocalDateTimeConverter();
+
     private String postID;
-    private LocalDateTime timeSent;
+    private LocalDateTime dateSent;
     private String postTitle;
     private String postBody;
     private String posterID;
@@ -23,7 +25,7 @@ public class Post {
     private List<String> comments;
     private Integer likesCounter;
 
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "post-time-index", attributeName = "postID")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "post-date-index", attributeName = "postID")
     @DynamoDBHashKey(attributeName = "postID")
     public String getPostID() {
         return postID;
@@ -34,14 +36,13 @@ public class Post {
     }
 
     @DynamoDBIndexRangeKey(globalSecondaryIndexNames =
-            {"post-time-index", "topic-index", "post-comments-index"}, attributeName = "timeSent")
-    public String getTimeSent() {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        return timeSent.format(formatter);
+            {"post-date-index", "topic-index", "post-comments-index"}, attributeName = "dateSent")
+    public String getDateSent() {
+        return converter.localDateToString(dateSent);
     }
 
-    public void setTimeSent(LocalDateTime timeSent) {
-        this.timeSent = timeSent;
+    public void setDateSent(LocalDateTime dateSent) {
+        this.dateSent = dateSent;
     }
 
     @DynamoDBAttribute(attributeName = "postTitle")
@@ -112,11 +113,11 @@ public class Post {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return Objects.equals(postID, post.postID) && Objects.equals(timeSent, post.timeSent) && Objects.equals(postTitle, post.postTitle) && Objects.equals(postBody, post.postBody) && Objects.equals(posterID, post.posterID) && Objects.equals(topic, post.topic) && Objects.equals(comments, post.comments) && Objects.equals(likesCounter, post.likesCounter);
+        return Objects.equals(postID, post.postID) && Objects.equals(dateSent, post.dateSent) && Objects.equals(postTitle, post.postTitle) && Objects.equals(postBody, post.postBody) && Objects.equals(posterID, post.posterID) && Objects.equals(topic, post.topic) && Objects.equals(comments, post.comments) && Objects.equals(likesCounter, post.likesCounter);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(postID, timeSent, postTitle, postBody, posterID, topic, comments, likesCounter);
+        return Objects.hash(postID, dateSent, postTitle, postBody, posterID, topic, comments, likesCounter);
     }
 }
