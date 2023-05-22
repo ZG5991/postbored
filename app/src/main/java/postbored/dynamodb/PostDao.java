@@ -1,5 +1,6 @@
 package postbored.dynamodb;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDeleteExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -55,6 +56,21 @@ public class PostDao {
         this.dynamoDbMapper.save(post);
         return post;
     }
+
+
+    /**
+     * deletes the given post
+     *
+     * @param postID The post ID to delete from the table
+     *
+     */
+    public void deletePost(String postID) {
+        DynamoDBDeleteExpression deleteExpression = new DynamoDBDeleteExpression();
+        deleteExpression.withConditionExpression(postID);
+
+        this.dynamoDbMapper.delete(Post.class, deleteExpression);
+    }
+
 
     /**
      * Perform a search (via a "scan") of the playlist table for playlists matching the given criteria.
