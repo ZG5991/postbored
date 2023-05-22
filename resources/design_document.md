@@ -173,8 +173,12 @@ Client sends create post form to Website New Post page. Website New Post page se
 ## Pages wireframes
 
 ![image](https://github.com/ZG5991/postbored/assets/92684029/010d25de-e4dc-4366-ba00-eca5d4a99e8b)
-![image](https://github.com/ZG5991/postbored/assets/92684029/7f00a3d1-a436-4e4a-94bc-9076b1bfae42)
-![image](https://github.com/ZG5991/postbored/assets/92684029/d20b8fcd-7340-48bd-98af-be0a907e8d8e)
+![image](https://github.com/ZG5991/postbored/assets/92684029/407c44bd-8569-414f-bc9b-6ff25d8d9f93)
+![image](https://github.com/ZG5991/postbored/assets/92684029/c1b24ad8-0ae4-484b-b4d8-4057b884309f)
+![image](https://github.com/ZG5991/postbored/assets/92684029/aed1f314-f8c7-4234-98cf-e4cde306af46)
+![image](https://github.com/ZG5991/postbored/assets/92684029/aa302b92-f5ff-4682-a9bc-99375eea8403)
+![image](https://github.com/ZG5991/postbored/assets/92684029/73b66103-1778-41a8-bf48-b7829eb2cd17)
 
-//diagram to be inserted upon completion
+
+
  
