@@ -1,34 +1,41 @@
 package postbored.activity;
 
-import postbored.activity.requests.DeletePostRequest;
-import postbored.activity.results.DeletePostResult;
+import postbored.activity.requests.GetPostsByDateRequest;
+import postbored.activity.results.GetPostsByDateResult;
 import postbored.dynamodb.PostDao;
+import postbored.dynamodb.models.Post;
 import postbored.models.PostModel;
 import postbored.utilities.ModelConverter;
 
 import javax.inject.Inject;
 import javax.management.InvalidAttributeValueException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DeletePostActivity {
+public class GetPostsByDateActivity {
 
     private final PostDao postDao;
 
     @Inject
-    public DeletePostActivity(PostDao postDao) {
+    public GetPostsByDateActivity(PostDao postDao) {
         this.postDao = postDao;
     }
 
-    public DeletePostResult handleRequest(final DeletePostRequest deletePostRequest) throws InvalidAttributeValueException {
+    public GetPostsByDateResult handleRequest(final GetPostsByDateRequest getPostByDateRequest) throws InvalidAttributeValueException {
 
-        if (deletePostRequest.getPostID() == null) {
+        if (getPostByDateRequest.getPostID() == null) {
             throw new InvalidAttributeValueException("UserID [" +
-                    deletePostRequest.getPostID() + "] is invalid!");
+                    getPostByDateRequest.getPostID() + "] is invalid!");
         }
 
-        PostModel postModel = new ModelConverter().toPostModel(postDao.getPost(deletePostRequest.getPostID()));
-        postDao.deletePost(postModel.getPostID());
+        List<Post> postList = postDao.getPostsBetweenDates(getPostByDateRequest.getStartDate(), getPostByDateRequest.getEndDate());
+        List<PostModel> postModelList = new ArrayList<>();
+        for(Post p : postList) {
+            postModelList.add(new ModelConverter().toPostModel(p));
+        }
 
-        return DeletePostResult.builder().withPost(postModel).build();
+        return GetPostsByDateResult.builder()
+                .withPosts(postModelList).build();
     }
 
 }

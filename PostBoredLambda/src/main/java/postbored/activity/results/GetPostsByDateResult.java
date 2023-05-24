@@ -2,23 +2,19 @@ package postbored.activity.results;
 
 import postbored.models.PostModel;
 
-public class GetPostByDateResult {
-    private final PostModel post;
+import java.util.List;
 
-    public GetPostByDateResult(PostModel post) {
-        this.post = post;
+public class GetPostsByDateResult {
+    private final List<PostModel> posts;
+
+    public GetPostsByDateResult(List<PostModel> posts) {
+        this.posts = posts;
     }
 
-    public PostModel getPost() {
-        return post;
+    public List<PostModel> getPost() {
+        return posts;
     }
 
-    @Override
-    public String toString() {
-        return "DeletePostResult{" +
-                "post=" + post +
-                '}';
-    }
 
     //CHECKSTYLE:OFF:Builder
     public static Builder builder() {
@@ -26,15 +22,15 @@ public class GetPostByDateResult {
     }
 
     public static class Builder {
-        private PostModel post;
+        private List<PostModel> posts;
 
-        public Builder withPost(PostModel post) {
-            this.post = post;
+        public Builder withPosts(List<PostModel> posts) {
+            this.posts = posts;
             return this;
         }
 
-        public GetPostByDateResult build() {
-            return new GetPostByDateResult(post);
+        public GetPostsByDateResult build() {
+            return new GetPostsByDateResult(posts);
         }
     }
 }

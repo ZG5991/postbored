@@ -1,19 +1,13 @@
 package postbored.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import postbored.utilities.LocalDateTimeConverter;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "comments")
 public class Comment {
-
-    private final LocalDateTimeConverter converter = new LocalDateTimeConverter();
 
     private String commentID;
     private LocalDateTime timeSent;
@@ -31,8 +25,9 @@ public class Comment {
     }
 
     @DynamoDBRangeKey(attributeName = "timeSent")
-    public String getTimeSent() {
-        return converter.localTimeToString(timeSent);
+    @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
+    public LocalDateTime getTimeSent() {
+        return timeSent;
     }
 
     public void setTimeSent(LocalDateTime timeSent) {

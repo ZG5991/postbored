@@ -10,8 +10,6 @@ import java.util.List;
 
 public class ModelConverter {
 
-    private final LocalDateTimeConverter converter = new LocalDateTimeConverter();
-
     public PostModel toPostModel(Post post) {
         List<String> comments = null;
         if (post.getComments() != null) {
@@ -20,7 +18,7 @@ public class ModelConverter {
 
         return PostModel.builder()
                 .withPostID(post.getPostID())
-                .withTimeSent(converter.stringToLocalDate(post.getDateSent()))
+                .withTimeSent(post.getDateSent())
                 .withPostTitle(post.getPostTitle())
                 .withPostBody(post.getPostBody())
                 .withPosterID(post.getPosterID())
@@ -34,7 +32,7 @@ public class ModelConverter {
     public CommentModel toCommentModel(Comment comment) {
         return CommentModel.builder()
                 .withCommentID(comment.getCommentID())
-                .withTimeSent(converter.stringToLocalTime(comment.getTimeSent()))
+                .withTimeSent(comment.getTimeSent())
                 .withCommentContent(comment.getCommentContent())
                 .withCommenterID(comment.getCommenterID())
                 .withPostID(comment.getPostID())

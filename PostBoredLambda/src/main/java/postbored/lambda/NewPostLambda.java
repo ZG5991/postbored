@@ -19,22 +19,16 @@ public class NewPostLambda extends LambdaActivityRunner<NewPostRequest, NewPostR
                             NewPostRequest.builder()
                                     .withPostID(unauthenticatedRequest.getPostID())
                                     .withTimeSent(unauthenticatedRequest.getTimeSent())
-                                    .withPosterID(unauthenticatedRequest.getPosterID())
+                                    .withPosterID(claims.get("email"))
                                     .withPostTitle(unauthenticatedRequest.getPostTitle())
                                     .withPostBody(unauthenticatedRequest.getPostBody())
-                                    .withPosterName(unauthenticatedRequest.getPosterName())
+                                    .withPosterName(claims.get("name"))
                                     .withComments(unauthenticatedRequest.getComments())
                                     .withTopic(unauthenticatedRequest.getTopic())
                                     .withLikesCounter(unauthenticatedRequest.getLikesCounter())
                                     .build());
                 },
         (request, serviceComponent) ->
-        {
-            try {
-                return serviceComponent.provideNewPostActivity().handleRequest(request);
-            } catch (InvalidAttributeValueException e) {
-                throw new RuntimeException(e);
-            }
-        });
+                serviceComponent.provideNewPostActivity().handleRequest(request));
     }
 }

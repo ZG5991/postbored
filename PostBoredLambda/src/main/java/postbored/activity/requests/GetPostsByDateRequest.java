@@ -5,15 +5,14 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 import java.time.LocalDateTime;
 
-@JsonDeserialize(builder = GetPostByDateRequest.Builder.class)
-public class GetPostByDateRequest {
+@JsonDeserialize(builder = GetPostsByDateRequest.Builder.class)
+public class GetPostsByDateRequest {
 
     private String postID;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
-    public GetPostByDateRequest(String postID, LocalDateTime startDate, LocalDateTime endDate) {
-        this.postID = postID;
+    public GetPostsByDateRequest(LocalDateTime startDate, LocalDateTime endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -33,7 +32,6 @@ public class GetPostByDateRequest {
     @Override
     public String toString() {
         return "GetPostByDateRequest{" +
-                "postID='" + postID + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 '}';
@@ -47,11 +45,6 @@ public class GetPostByDateRequest {
         private LocalDateTime startDate;
         private LocalDateTime endDate;
 
-        public Builder withPostID(String postID) {
-            this.postID = postID;
-            return this;
-        }
-
         public Builder withStartDateD(LocalDateTime startDate) {
             this.startDate = startDate;
             return this;
@@ -62,8 +55,8 @@ public class GetPostByDateRequest {
             return this;
         }
 
-        public GetPostByDateRequest build() {
-            return new GetPostByDateRequest(postID, startDate, endDate);
+        public GetPostsByDateRequest build() {
+            return new GetPostsByDateRequest(startDate, endDate);
         }
     }
 }

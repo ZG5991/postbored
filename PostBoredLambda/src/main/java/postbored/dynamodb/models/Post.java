@@ -15,8 +15,6 @@ import java.util.Objects;
 @DynamoDBTable(tableName = "posts")
 public class Post {
 
-    public LocalDateTimeConverter converter;
-
     private String postID;
     private LocalDateTime dateSent;
     private String postTitle;
@@ -39,8 +37,9 @@ public class Post {
 
     @DynamoDBIndexRangeKey(globalSecondaryIndexNames =
             {"post-date-index", "topic-index", "post-comments-index"}, attributeName = "dateSent")
-    public String getDateSent() {
-        return converter.localDateToString(dateSent);
+    @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
+    public LocalDateTime getDateSent() {
+        return dateSent;
     }
 
     public void setDateSent(LocalDateTime dateSent) {

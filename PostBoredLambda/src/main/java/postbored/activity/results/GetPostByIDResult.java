@@ -2,10 +2,10 @@ package postbored.activity.results;
 
 import postbored.models.PostModel;
 
-public class DeletePostResult {
+public class GetPostByIDResult {
     private final PostModel post;
 
-    public DeletePostResult(PostModel post) {
+    public GetPostByIDResult(PostModel post) {
         this.post = post;
     }
 
@@ -15,7 +15,7 @@ public class DeletePostResult {
 
     @Override
     public String toString() {
-        return "DeletePostResult{" +
+        return "GetPostByIDResult{" +
                 "post=" + post +
                 '}';
     }
@@ -33,8 +33,8 @@ public class DeletePostResult {
             return this;
         }
 
-        public DeletePostResult build() {
-            return new DeletePostResult(post);
+        public GetPostByIDResult build() {
+            return new GetPostByIDResult(post);
         }
     }
 }

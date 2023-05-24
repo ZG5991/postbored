@@ -1,28 +1,22 @@
 package postbored.utilities;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class LocalDateTimeConverter {
+public class LocalDateTimeConverter implements DynamoDBTypeConverter<String, LocalDateTime> {
 
-    public String localDateToString(LocalDateTime date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-        return date.format(formatter);
+    @Override
+    public String convert(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        return dateTime.format(formatter);
     }
 
-    public LocalDateTime stringToLocalDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    @Override
+    public LocalDateTime unconvert(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return LocalDateTime.parse(date, formatter);
-    }
-
-    public String localTimeToString(LocalDateTime time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_TIME;
-        return time.format(formatter);
-    }
-
-    public LocalDateTime stringToLocalTime(String time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_TIME;
-        return LocalDateTime.parse(time, formatter);
     }
 
 }

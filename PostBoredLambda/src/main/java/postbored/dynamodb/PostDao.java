@@ -3,9 +3,13 @@ package postbored.dynamodb;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDeleteExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
 import postbored.dynamodb.models.Post;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +48,23 @@ public class PostDao {
         }
 
         return post;
+    }
+
+    public List<Post> getPostsBetweenDates(LocalDateTime startDate, LocalDateTime endDate) {
+        DynamoDBScanExpression expression = new DynamoDBScanExpression();
+        expression.addFilterCondition(
+                "dateSent",
+                new Condition()
+                        .withComparisonOperator(ComparisonOperator.BETWEEN.toString())
+                        .withAttributeValueList(
+                                new AttributeValue().withS(startDate.toString()),
+                                new AttributeValue().withS(endDate.toString())
+                        )
+        );
+
+        PaginatedScanList<Post> scanList = dynamoDbMapper.scan(Post.class, expression);
+
+        return scanList;
     }
 
     /**

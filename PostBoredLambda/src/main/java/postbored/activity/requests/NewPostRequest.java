@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @JsonDeserialize(builder = NewPostRequest.Builder.class)
 public class NewPostRequest {
@@ -37,7 +38,7 @@ public class NewPostRequest {
     }
 
     public LocalDateTime getTimeSent() {
-        return timeSent;
+        return LocalDateTime.now();
     }
 
     public String getPostTitle() {
@@ -65,7 +66,7 @@ public class NewPostRequest {
     }
 
     public Integer getLikesCounter() {
-        return likesCounter;
+        return 0;
     }
 
     @Override

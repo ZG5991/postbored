@@ -6,7 +6,7 @@ import DataStore from '../util/DataStore';
 /**
  * Logic needed for the create playlist page of the website.
  */
-class CreatePlaylist extends BindingClass {
+class CreatePost extends BindingClass {
     constructor() {
         super();
         this.bindClassMethods(['mount', 'submit', 'redirectToViewPlaylist'], this);
@@ -51,21 +51,21 @@ class CreatePlaylist extends BindingClass {
             tags = tagsText.split(/\s*,\s*/);
         }
 
-        const playlist = await this.client.createPlaylist(playlistName, tags, (error) => {
+        const post = await this.client.createPost(title, content, (error) => {
             createButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
         });
-        this.dataStore.set('playlist', playlist);
+        this.dataStore.set('post', post);
     }
 
     /**
      * When the playlist is updated in the datastore, redirect to the view playlist page.
      */
     redirectToViewPlaylist() {
-        const playlist = this.dataStore.get('playlist');
-        if (playlist != null) {
-            window.location.href = `/playlist.html?id=${playlist.id}`;
+        const post = this.dataStore.get('post');
+        if (post != null) {
+            window.location.href = `/posts.html?id=${posts.postID}`;
         }
     }
 }

@@ -1,7 +1,7 @@
 package postbored.activity;
 
-import postbored.activity.requests.DeletePostRequest;
-import postbored.activity.results.DeletePostResult;
+import postbored.activity.requests.GetPostByIDRequest;
+import postbored.activity.results.GetPostByIDResult;
 import postbored.dynamodb.PostDao;
 import postbored.models.PostModel;
 import postbored.utilities.ModelConverter;
@@ -9,26 +9,26 @@ import postbored.utilities.ModelConverter;
 import javax.inject.Inject;
 import javax.management.InvalidAttributeValueException;
 
-public class DeletePostActivity {
+public class GetPostByIDActivity {
 
     private final PostDao postDao;
 
     @Inject
-    public DeletePostActivity(PostDao postDao) {
+    public GetPostByIDActivity(PostDao postDao) {
         this.postDao = postDao;
     }
 
-    public DeletePostResult handleRequest(final DeletePostRequest deletePostRequest) throws InvalidAttributeValueException {
+    public GetPostByIDResult handleRequest(final GetPostByIDRequest getPostByIDRequest) throws InvalidAttributeValueException {
 
-        if (deletePostRequest.getPostID() == null) {
+        if (getPostByIDRequest.getPostID() == null) {
             throw new InvalidAttributeValueException("UserID [" +
-                    deletePostRequest.getPostID() + "] is invalid!");
+                    getPostByIDRequest.getPostID() + "] is invalid!");
         }
 
-        PostModel postModel = new ModelConverter().toPostModel(postDao.getPost(deletePostRequest.getPostID()));
-        postDao.deletePost(postModel.getPostID());
+        PostModel postModel = new ModelConverter().toPostModel(postDao.getPost(getPostByIDRequest.getPostID()));
+        postDao.getPost(postModel.getPostID());
 
-        return DeletePostResult.builder().withPost(postModel).build();
+        return GetPostByIDResult.builder().withPost(postModel).build();
     }
 
 }
