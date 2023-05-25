@@ -2,28 +2,28 @@
 <html>
 
 <head>
-    <script type="text/javascript" src="assets/createPlaylist.js"></script>
+    <script type="text/javascript" src="pages/createPost.js"></script>
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body class="background">
     <header class="header" id="header"></header>
     <div class="card">
-        <h2>Create Playlist</h2>
-        <form class="card-content" id="create-playlist-form">
+        <h2>Create Post</h2>
+        <form class="card-content" id="create-post-form">
             <p class="hidden error" id="error-post"> </p>
             <p class="form-field">
-                <label>Playlist Name</label>
-                <input type="text" required class="validated-field" id="playlist-name" placeholder="smooth-jamz"
+                <label>Title</label>
+                <input type="text" required class="validated-field" id="postTitle" placeholder="new post"
                     autofocus>
             </p>
             <p class="form-field">
-                <label>Tags</label>
-                <input type="text" id="tags" class="tags" placeholder="tag1,tag2"
-                    data-tip="Must be a comma separated list of tags">
+                <label>Body</label>
+                <input type="text" id="postBody" class="postBody" placeholder="main text"
+                    data-tip="post body must contain text">
             </p>
             <p>
-                <a href="#" class="button" id="create">Create Playlist</a>
+                <a href="#" class="button" id="create">Create Post</a>
             </p>
         </form>
     </div>

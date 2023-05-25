@@ -6,7 +6,7 @@ import DataStore from '../util/DataStore';
 /**
  * Logic needed for the create playlist page of the website.
  */
-class CreatePlaylist extends BindingClass {
+class CreatePost extends BindingClass {
     constructor() {
         super();
         this.bindClassMethods(['mount', 'submit', 'redirectToViewPlaylist'], this);
@@ -41,31 +41,31 @@ class CreatePlaylist extends BindingClass {
         const origButtonText = createButton.innerText;
         createButton.innerText = 'Loading...';
 
-        const playlistName = document.getElementById('playlist-name').value;
-        const tagsText = document.getElementById('tags').value;
+        const postTitle = document.getElementById('postTitle').value;
+        const postBody = document.getElementById('postBody').value;
 
         let tags;
         if (tagsText.length < 1) {
-            tags = null;
+            postBody = null;
         } else {
-            tags = tagsText.split(/\s*,\s*/);
+            postBody = postBody;
         }
 
-        const playlist = await this.client.createPlaylist(playlistName, tags, (error) => {
+        const post = await this.client.createPost(postTitle, postBody, (error) => {
             createButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
         });
-        this.dataStore.set('playlist', playlist);
+        this.dataStore.set('post', post);
     }
 
     /**
      * When the playlist is updated in the datastore, redirect to the view playlist page.
      */
     redirectToViewPlaylist() {
-        const playlist = this.dataStore.get('playlist');
-        if (playlist != null) {
-            window.location.href = `/playlist.html?id=${playlist.id}`;
+        const post = this.dataStore.get('post');
+        if (post != null) {
+            window.location.href = `/posts.html?id=${posts.postID}`;
         }
     }
 }
