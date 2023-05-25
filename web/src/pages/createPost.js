@@ -41,17 +41,17 @@ class CreatePost extends BindingClass {
         const origButtonText = createButton.innerText;
         createButton.innerText = 'Loading...';
 
-        const playlistName = document.getElementById('playlist-name').value;
-        const tagsText = document.getElementById('tags').value;
+        const postTitle = document.getElementById('postTitle').value;
+        const postBody = document.getElementById('postBody').value;
 
         let tags;
         if (tagsText.length < 1) {
-            tags = null;
+            postBody = null;
         } else {
-            tags = tagsText.split(/\s*,\s*/);
+            postBody = postBody;
         }
 
-        const post = await this.client.createPost(title, content, (error) => {
+        const post = await this.client.createPost(postTitle, postBody, (error) => {
             createButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');

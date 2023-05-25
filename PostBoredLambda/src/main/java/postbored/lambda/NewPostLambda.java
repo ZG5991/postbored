@@ -5,8 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import postbored.activity.requests.NewPostRequest;
 import postbored.activity.results.NewPostResult;
 
-import javax.management.InvalidAttributeValueException;
-
 public class NewPostLambda extends LambdaActivityRunner<NewPostRequest, NewPostResult>
         implements RequestHandler<AuthenticatedLambdaRequest<NewPostRequest>, LambdaResponse> {
 

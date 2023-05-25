@@ -228,7 +228,7 @@ Resources:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
       Events:
-        MusicPlaylistService:
+        PostBoredService:
           Type: Api
           Properties:
             Path: /posts
@@ -248,7 +248,7 @@ Resources:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
       Events:
-        MusicPlaylistService:
+        PostBoredService:
           Type: Api
           Properties:
             Path: /posts
