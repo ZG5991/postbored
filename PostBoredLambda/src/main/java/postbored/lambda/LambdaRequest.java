@@ -3,6 +3,8 @@ package postbored.lambda;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -14,8 +16,10 @@ import static postbored.utilities.NullUtils.ifNull;
 public class LambdaRequest<T> extends APIGatewayProxyRequestEvent {
 
     protected static final ObjectMapper MAPPER = new ObjectMapper();
+    protected final Logger log = LogManager.getLogger();
 
     public T fromBody(Class<T> requestClass) {
+        log.info("fromBody");
         try {
             return MAPPER.readValue(super.getBody(), requestClass);
         } catch (JsonProcessingException e) {
@@ -32,11 +36,13 @@ public class LambdaRequest<T> extends APIGatewayProxyRequestEvent {
     }
 
     public T fromPath(Function<Map<String, String>, T> converter) {
+        log.info("fromPath");
         Map<String, String> path = ifNull(super.getPathParameters(), Map.of());
         return converter.apply(path);
     }
 
     public T fromPathAndQuery(BiFunction<Map<String, String>, Map<String, String>, T> converter) {
+        log.info("fromPathAndQuery");
         Map<String, String> path = ifNull(super.getPathParameters(), Map.of());
         Map<String, String> query = ifNull(super.getQueryStringParameters(), Map.of());
         return converter.apply(path, query);

@@ -1,5 +1,7 @@
 package postbored.lambda;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import postbored.dependency.DaggerServiceComponent;
 import postbored.dependency.ServiceComponent;
 
@@ -9,10 +11,12 @@ import java.util.function.Supplier;
 public class LambdaActivityRunner<Request, Result> {
 
     ServiceComponent serviceComponent;
+    private final Logger log = LogManager.getLogger();
 
     LambdaResponse runActivity(
             Supplier<Request> requestSupplier,
             BiFunction<Request, ServiceComponent, Result> handleRequest) {
+        log.info("runActivity");
         try {
             Request request = requestSupplier.get();
             ServiceComponent service = getService();
@@ -24,6 +28,7 @@ public class LambdaActivityRunner<Request, Result> {
     }
 
     private ServiceComponent getService() {
+        log.info("getService");
         if (serviceComponent == null) {
             serviceComponent = DaggerServiceComponent.create();
         }

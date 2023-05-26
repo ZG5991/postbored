@@ -10,6 +10,7 @@ import postbored.utilities.ModelConverter;
 
 import javax.inject.Inject;
 import javax.management.InvalidAttributeValueException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -46,8 +47,9 @@ public class NewPostActivity {
 
         Post post = new Post();
 
-        post.setPostTitle(UUID.randomUUID().toString());
-        post.setDateSent(newPostRequest.getTimeSent());
+        post.setPostID(UUID.randomUUID().toString());
+        post.setDateSent(LocalDateTime.now());
+        post.setPostTitle(newPostRequest.getPostTitle());
         post.setPostBody(newPostRequest.getPostBody());
         post.setPosterID(newPostRequest.getPosterID());
         post.setPosterName(newPostRequest.getPosterName());
