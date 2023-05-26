@@ -12,9 +12,19 @@ public class NewPostLambda extends LambdaActivityRunner<NewPostRequest, NewPostR
 
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<NewPostRequest> input, Context context) {
+
+        System.out.println("initializing runActivity in NewPostLambda");
+
         return super.runActivity(
                 () -> {
+
+                    System.out.println("initializing newPostRequest with input from request body in NewPostLambda");
+
                     NewPostRequest unauthenticatedRequest = input.fromBody(NewPostRequest.class);
+                    //check print on line 24 of LambdaRequest
+
+                    System.out.println("running input from user claims");
+
                     return input.fromUserClaims(claims ->
                             NewPostRequest.builder()
                                     .withPostID(unauthenticatedRequest.getPostID())
@@ -30,5 +40,6 @@ public class NewPostLambda extends LambdaActivityRunner<NewPostRequest, NewPostR
                 },
         (request, serviceComponent) ->
                 serviceComponent.provideNewPostActivity().handleRequest(request));
+
     }
 }

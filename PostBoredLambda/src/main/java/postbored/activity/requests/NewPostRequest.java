@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@JsonDeserialize(builder = NewPostRequest.Builder.class)
+@JsonDeserialize(builder = NewPostRequest.Builder.class) //getting bad request on class call with lambda, not sure why yet
 public class NewPostRequest {
 
     private String postID;
@@ -18,8 +18,6 @@ public class NewPostRequest {
     private String topic;
     private List<String> comments;
     private Integer likesCounter;
-
-    public NewPostRequest() {}
 
     public NewPostRequest(String postID, LocalDateTime timeSent, String postTitle, String postBody,
                           String posterID, String posterName, String topic, List<String> comments, Integer likesCounter) {
