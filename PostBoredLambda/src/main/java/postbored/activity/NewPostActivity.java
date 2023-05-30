@@ -1,6 +1,7 @@
 package postbored.activity;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import postbored.activity.requests.NewPostRequest;
 import postbored.activity.results.NewPostResult;
 import postbored.dynamodb.PostDao;
@@ -10,12 +11,10 @@ import postbored.utilities.ModelConverter;
 
 import javax.inject.Inject;
 import javax.management.InvalidAttributeValueException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class NewPostActivity {
 
+    private final Logger log = LogManager.getLogger();
     private final PostDao postDao;
 
     @Inject
@@ -23,44 +22,38 @@ public class NewPostActivity {
         this.postDao = postDao;
     }
 
-    public NewPostResult handleRequest(final NewPostRequest newPostRequest) {
+    public NewPostResult handleRequest(final NewPostRequest newPostRequest) throws InvalidAttributeValueException {
 
-        if (newPostRequest.getPosterID().isEmpty() || newPostRequest.getPosterID() == null) {
-            System.out.println("UserID [" +
-                    newPostRequest.getPosterID() + "] is invalid!");
+        log.info("Received NewPostRequest {}", newPostRequest);
+
+        if (newPostRequest.getPosterID().isEmpty() || newPostRequest.getPosterName() == null) {
+            throw new InvalidAttributeValueException("PosterID or Name could not be found.");
         }
 
         if (newPostRequest.getPostTitle().isEmpty() || newPostRequest.getPostTitle() == null) {
-            System.out.println("Post Title cannot be empty.");
+            throw new InvalidAttributeValueException("Post Title cannot be empty.");
         }
 
         if (newPostRequest.getPostBody().isEmpty() || newPostRequest.getPostBody() == null) {
-            System.out.println("Post Body cannot be empty.");
-        }
-
-
-        List<String> postComments = null;
-        if (newPostRequest.getComments() != null) {
-            postComments = new ArrayList<>(newPostRequest.getComments());
+            throw new InvalidAttributeValueException("Post Body cannot be empty.");
         }
 
         Post post = new Post();
 
-        post.setPostTitle(UUID.randomUUID().toString());
-        post.setDateSent(newPostRequest.getTimeSent());
-        post.setPostBody(newPostRequest.getPostBody());
         post.setPosterID(newPostRequest.getPosterID());
         post.setPosterName(newPostRequest.getPosterName());
+        post.setPostTitle(newPostRequest.getPostTitle());
+        post.setPostBody(newPostRequest.getPostBody());
         post.setTopic(newPostRequest.getTopic());
-        post.setComments(postComments);
-        post.setLikesCounter(0);
 
-        postDao.savePost(post);
+        postDao.saveNewPost(post);
+
 
         PostModel postModel = new ModelConverter().toPostModel(post);
         return NewPostResult.builder()
-                .withPost(postModel)
-                .build();
+                    .withPost(postModel)
+                    .build();
+
     }
 
 }

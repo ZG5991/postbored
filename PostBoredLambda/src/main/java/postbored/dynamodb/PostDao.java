@@ -10,9 +10,7 @@ import com.amazonaws.services.dynamodbv2.model.Condition;
 import postbored.dynamodb.models.Post;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -68,14 +66,30 @@ public class PostDao {
     }
 
     /**
-     * Saves (creates or updates) the given playlist.
-     *
+     * Saves (creates or updates) the given post.
+     * Initializes non-user input fields for a new unique post.
      * @param post The playlist to save
-     * @return The Playlist object that was saved
      */
-    public Post savePost(Post post) {
+    public void saveNewPost(Post post) {
+
+        //setup all necessary fields not input by the user
+        if (post.getPostID() == null) {
+            post.setPostID(UUID.randomUUID().toString());
+        }
+
+        if (post.getLikesCounter() == null) {
+            post.setLikesCounter(0);
+        }
+
+        if (post.getDateSent() == null) {
+            post.setDateSent(LocalDateTime.now());
+        }
+
+        if (post.getComments() == null) {
+            post.setComments(Collections.emptyList());
+        }
+
         this.dynamoDbMapper.save(post);
-        return post;
     }
 
 

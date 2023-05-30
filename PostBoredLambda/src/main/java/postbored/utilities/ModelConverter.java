@@ -6,11 +6,14 @@ import postbored.models.CommentModel;
 import postbored.models.PostModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ModelConverter {
 
     public PostModel toPostModel(Post post) {
+
+        //creates a list for a new postModel if comments already exist in the request.
         List<String> comments = null;
         if (post.getComments() != null) {
             comments = new ArrayList<>(post.getComments());
