@@ -27,19 +27,22 @@ public class NewPostLambda extends LambdaActivityRunner<NewPostRequest, NewPostR
 
                     return input.fromUserClaims(claims ->
                             NewPostRequest.builder()
-                                    .withPostID(unauthenticatedRequest.getPostID())
-                                    .withTimeSent(unauthenticatedRequest.getTimeSent())
                                     .withPosterID(claims.get("email"))
                                     .withPostTitle(unauthenticatedRequest.getPostTitle())
                                     .withPostBody(unauthenticatedRequest.getPostBody())
                                     .withPosterName(claims.get("name"))
-                                    .withComments(unauthenticatedRequest.getComments())
                                     .withTopic(unauthenticatedRequest.getTopic())
-                                    .withLikesCounter(unauthenticatedRequest.getLikesCounter())
                                     .build());
                 },
-        (request, serviceComponent) ->
-                serviceComponent.provideNewPostActivity().handleRequest(request));
+
+        (request, serviceComponent) -> {
+                    try{
+               return serviceComponent.provideNewPostActivity().handleRequest(request);
+                    } catch (Exception e) {
+                        System.out.println("ZACH" + e.toString());
+                        throw e;
+                    }
+        });
 
     }
 }

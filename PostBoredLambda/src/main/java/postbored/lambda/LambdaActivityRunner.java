@@ -17,7 +17,7 @@ public class LambdaActivityRunner<Request, Result> {
             Supplier<Request> requestSupplier,
             BiFunction<Request, ServiceComponent, Result> handleRequest) {
 
-        log.info("runActivity");
+        log.info("starting runActivity in LambdaActivityRunner");
         System.out.println("starting runActivity in LambdaActivityRunner");
 
         try {

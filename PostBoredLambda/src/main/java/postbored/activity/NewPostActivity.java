@@ -1,6 +1,7 @@
 package postbored.activity;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import postbored.activity.requests.NewPostRequest;
 import postbored.activity.results.NewPostResult;
 import postbored.dynamodb.PostDao;
@@ -9,14 +10,10 @@ import postbored.models.PostModel;
 import postbored.utilities.ModelConverter;
 
 import javax.inject.Inject;
-import javax.management.InvalidAttributeValueException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class NewPostActivity {
 
+    private final Logger log = LogManager.getLogger();
     private final PostDao postDao;
 
     @Inject
@@ -26,10 +23,8 @@ public class NewPostActivity {
 
     public NewPostResult handleRequest(final NewPostRequest newPostRequest) {
 
-        if (newPostRequest.getPosterID().isEmpty() || newPostRequest.getPosterID() == null) {
-            System.out.println("UserID [" +
-                    newPostRequest.getPosterID() + "] is invalid!");
-        }
+        log.info("Received NewPostRequest {}", newPostRequest);
+        System.out.printf("Received NewPostRequest %s", newPostRequest);
 
         if (newPostRequest.getPostTitle().isEmpty() || newPostRequest.getPostTitle() == null) {
             System.out.println("Post Title cannot be empty.");
@@ -40,29 +35,28 @@ public class NewPostActivity {
         }
 
 
-        List<String> postComments = null;
-        if (newPostRequest.getComments() != null) {
-            postComments = new ArrayList<>(newPostRequest.getComments());
-        }
-
         Post post = new Post();
 
-        post.setPostID(UUID.randomUUID().toString());
-        post.setDateSent(LocalDateTime.now());
-        post.setPostTitle(newPostRequest.getPostTitle());
-        post.setPostBody(newPostRequest.getPostBody());
         post.setPosterID(newPostRequest.getPosterID());
         post.setPosterName(newPostRequest.getPosterName());
+        post.setPostTitle(newPostRequest.getPostTitle());
+        post.setPostBody(newPostRequest.getPostBody());
         post.setTopic(newPostRequest.getTopic());
-        post.setComments(postComments);
-        post.setLikesCounter(0);
 
         postDao.savePost(post);
 
-        PostModel postModel = new ModelConverter().toPostModel(post);
-        return NewPostResult.builder()
-                .withPost(postModel)
-                .build();
+
+        try {
+            PostModel postModel = new ModelConverter().toPostModel(post);
+            System.out.println(postModel.toString());
+            return NewPostResult.builder()
+                    .withPost(postModel)
+                    .build();
+        } catch (Exception e) {
+            System.out.println("ZACH" + e.toString());
+            throw e;
+        }
+
     }
 
 }
