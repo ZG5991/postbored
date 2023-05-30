@@ -13,6 +13,7 @@ public class ModelConverter {
 
     public PostModel toPostModel(Post post) {
 
+        //creates a list for a new postModel if comments already exist in the request.
         List<String> comments = null;
         if (post.getComments() != null) {
             comments = new ArrayList<>(post.getComments());

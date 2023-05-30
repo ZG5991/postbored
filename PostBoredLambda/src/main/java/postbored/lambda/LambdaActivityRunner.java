@@ -18,7 +18,6 @@ public class LambdaActivityRunner<Request, Result> {
             BiFunction<Request, ServiceComponent, Result> handleRequest) {
 
         log.info("starting runActivity in LambdaActivityRunner");
-        System.out.println("starting runActivity in LambdaActivityRunner");
 
         try {
             Request request = requestSupplier.get();
@@ -26,7 +25,7 @@ public class LambdaActivityRunner<Request, Result> {
             Result result = handleRequest.apply(request, service);
             return LambdaResponse.success(result);
         } catch (Exception e) {
-            return LambdaResponse.error(e);
+            return LambdaResponse.error(e.getMessage());
         }
     }
 

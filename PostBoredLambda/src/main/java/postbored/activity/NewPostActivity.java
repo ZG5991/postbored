@@ -10,6 +10,7 @@ import postbored.models.PostModel;
 import postbored.utilities.ModelConverter;
 
 import javax.inject.Inject;
+import javax.management.InvalidAttributeValueException;
 
 public class NewPostActivity {
 
@@ -21,19 +22,21 @@ public class NewPostActivity {
         this.postDao = postDao;
     }
 
-    public NewPostResult handleRequest(final NewPostRequest newPostRequest) {
+    public NewPostResult handleRequest(final NewPostRequest newPostRequest) throws InvalidAttributeValueException {
 
         log.info("Received NewPostRequest {}", newPostRequest);
-        System.out.printf("Received NewPostRequest %s", newPostRequest);
+
+        if (newPostRequest.getPosterID().isEmpty() || newPostRequest.getPosterName() == null) {
+            throw new InvalidAttributeValueException("PosterID or Name could not be found.");
+        }
 
         if (newPostRequest.getPostTitle().isEmpty() || newPostRequest.getPostTitle() == null) {
-            System.out.println("Post Title cannot be empty.");
+            throw new InvalidAttributeValueException("Post Title cannot be empty.");
         }
 
         if (newPostRequest.getPostBody().isEmpty() || newPostRequest.getPostBody() == null) {
-            System.out.println("Post Body cannot be empty.");
+            throw new InvalidAttributeValueException("Post Body cannot be empty.");
         }
-
 
         Post post = new Post();
 
@@ -43,19 +46,13 @@ public class NewPostActivity {
         post.setPostBody(newPostRequest.getPostBody());
         post.setTopic(newPostRequest.getTopic());
 
-        postDao.savePost(post);
+        postDao.saveNewPost(post);
 
 
-        try {
-            PostModel postModel = new ModelConverter().toPostModel(post);
-            System.out.println(postModel.toString());
-            return NewPostResult.builder()
+        PostModel postModel = new ModelConverter().toPostModel(post);
+        return NewPostResult.builder()
                     .withPost(postModel)
                     .build();
-        } catch (Exception e) {
-            System.out.println("ZACH" + e.toString());
-            throw e;
-        }
 
     }
 

@@ -66,13 +66,13 @@ public class PostDao {
     }
 
     /**
-     * Saves (creates or updates) the given playlist.
-     *
+     * Saves (creates or updates) the given post.
+     * Initializes non-user input fields for a new unique post.
      * @param post The playlist to save
-     * @return The Playlist object that was saved
      */
-    public Post savePost(Post post) {
+    public void saveNewPost(Post post) {
 
+        //setup all necessary fields not input by the user
         if (post.getPostID() == null) {
             post.setPostID(UUID.randomUUID().toString());
         }
@@ -90,7 +90,6 @@ public class PostDao {
         }
 
         this.dynamoDbMapper.save(post);
-        return post;
     }
 
 
