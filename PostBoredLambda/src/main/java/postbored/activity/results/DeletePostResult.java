@@ -1,22 +1,21 @@
 package postbored.activity.results;
 
-import postbored.models.PostModel;
-
 public class DeletePostResult {
-    private final PostModel post;
 
-    public DeletePostResult(PostModel post) {
-        this.post = post;
+    private final String postID;
+
+    public DeletePostResult(String postID) {
+        this.postID = postID;
     }
 
-    public PostModel getPost() {
-        return post;
+    public String getPostID() {
+        return postID;
     }
 
     @Override
     public String toString() {
         return "DeletePostResult{" +
-                "post=" + post +
+                "postID='" + postID + '\'' +
                 '}';
     }
 
@@ -26,15 +25,22 @@ public class DeletePostResult {
     }
 
     public static class Builder {
-        private PostModel post;
 
-        public Builder withPost(PostModel post) {
-            this.post = post;
+        private String postID;
+
+        public Builder withPostID(String postID) {
+            this.postID = postID;
             return this;
         }
-
         public DeletePostResult build() {
-            return new DeletePostResult(post);
+            return new DeletePostResult(postID);
+        }
+
+        @Override
+        public String toString() {
+            return "Builder{" +
+                    "postID='" + postID + '\'' +
+                    '}';
         }
     }
 }

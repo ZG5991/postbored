@@ -78,14 +78,11 @@ public class PostDao {
     /**
      * deletes the given post
      *
-     * @param postID The post ID to delete from the table
+     * @param post The post to delete from the table
      *
      */
-    public void deletePost(String postID) {
-        DynamoDBDeleteExpression deleteExpression = new DynamoDBDeleteExpression();
-        deleteExpression.withConditionExpression(postID);
-
-        this.dynamoDbMapper.delete(Post.class, deleteExpression);
+    public void deletePost(Post post) {
+        this.dynamoDbMapper.delete(post);
     }
 
 
