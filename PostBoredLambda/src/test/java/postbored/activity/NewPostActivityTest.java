@@ -60,12 +60,25 @@ public class NewPostActivityTest {
 
 
     @Test
-    public void handleRequest_invalidName_throwsInvalidAttributeValueException() {
+    public void handleRequest_invalidTitle_throwsInvalidAttributeValueException() {
         // GIVEN
         NewPostRequest request = NewPostRequest.builder()
                                             .withPostTitle("I'm illegal")
                                             .withPosterID("poster")
                                             .build();
+
+        // WHEN + THEN
+        assertThrows(InvalidAttributeValueException.class, () -> newPostActivity.handleRequest(request));
+    }
+
+    @Test
+    public void handleRequest_invalidPostBody_throwsInvalidAttributeValueException() {
+        // GIVEN
+        NewPostRequest request = NewPostRequest.builder()
+                .withPostTitle("Valid Title")
+                .withPostBody("Illegal")
+                .withPosterID("poster")
+                .build();
 
         // WHEN + THEN
         assertThrows(InvalidAttributeValueException.class, () -> newPostActivity.handleRequest(request));
