@@ -39,7 +39,7 @@ public class PostDao {
      * @return the stored Playlist, or null if none was found.
      */
     public Post getPost(String id) {
-        Post post = this.dynamoDbMapper.load(Post.class, id);
+        Post post = dynamoDbMapper.load(Post.class, id);
 
         if (post == null) {
             throw new IllegalArgumentException("Could not find message with id " + id);
