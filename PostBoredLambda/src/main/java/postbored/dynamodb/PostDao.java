@@ -70,25 +70,7 @@ public class PostDao {
      * Initializes non-user input fields for a new unique post.
      * @param post The playlist to save
      */
-    public void saveNewPost(Post post) {
-
-        //setup all necessary fields not input by the user
-        if (post.getPostID() == null) {
-            post.setPostID(UUID.randomUUID().toString());
-        }
-
-        if (post.getLikesCounter() == null) {
-            post.setLikesCounter(0);
-        }
-
-        if (post.getDateSent() == null) {
-            post.setDateSent(LocalDateTime.now());
-        }
-
-        if (post.getComments() == null) {
-            post.setComments(Collections.emptyList());
-        }
-
+    public void savePost(Post post) {
         this.dynamoDbMapper.save(post);
     }
 
