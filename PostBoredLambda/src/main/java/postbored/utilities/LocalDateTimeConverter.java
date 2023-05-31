@@ -9,8 +9,11 @@ public class LocalDateTimeConverter implements DynamoDBTypeConverter<String, Loc
 
     @Override
     public String convert(LocalDateTime dateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        return dateTime.format(formatter);
+        if (dateTime != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+            return dateTime.format(formatter);
+        }
+        return "No Date found";
     }
 
     @Override

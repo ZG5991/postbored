@@ -11,6 +11,9 @@ import postbored.utilities.ModelConverter;
 
 import javax.inject.Inject;
 import javax.management.InvalidAttributeValueException;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.UUID;
 
 public class NewPostActivity {
 
@@ -40,13 +43,17 @@ public class NewPostActivity {
 
         Post post = new Post();
 
+        post.setPostID(UUID.randomUUID().toString());
+        post.setDateSent(LocalDateTime.now());
         post.setPosterID(newPostRequest.getPosterID());
         post.setPosterName(newPostRequest.getPosterName());
         post.setPostTitle(newPostRequest.getPostTitle());
         post.setPostBody(newPostRequest.getPostBody());
         post.setTopic(newPostRequest.getTopic());
+        post.setComments(Collections.emptyList());
+        post.setLikesCounter(0);
 
-        postDao.saveNewPost(post);
+        postDao.savePost(post);
 
 
         PostModel postModel = new ModelConverter().toPostModel(post);
