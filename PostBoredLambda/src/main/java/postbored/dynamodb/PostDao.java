@@ -70,8 +70,9 @@ public class PostDao {
      * Initializes non-user input fields for a new unique post.
      * @param post The playlist to save
      */
-    public void savePost(Post post) {
+    public Post savePost(Post post) {
         this.dynamoDbMapper.save(post);
+        return post;
     }
 
 

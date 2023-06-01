@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.management.InvalidAttributeValueException;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.UUID;
 
 public class EditPostBodyActivity {
@@ -27,9 +28,21 @@ public class EditPostBodyActivity {
         this.postDao = postDao;
     }
 
-    public EditPostBodyResult handleRequest(final EditPostBodyRequest editPostBodyRequest) throws InvalidAttributeValueException {
+    public EditPostBodyResult handleRequest(final EditPostBodyRequest editPostBodyRequest) throws InvalidAttributeValueException{
 
         log.info("Received EditPostBodyRequest {}", editPostBodyRequest);
+
+        if (editPostBodyRequest.getPostID() == null) {
+            throw new InvalidAttributeValueException(String.format("Post ID %s was invalid!", editPostBodyRequest.getPostID()));
+        }
+
+        if (editPostBodyRequest.getPostBody() == null) {
+            throw new InvalidAttributeValueException(String.format("Post body %s is invalid!", editPostBodyRequest.getPostBody()));
+        }
+
+        if (editPostBodyRequest.getPosterID() == null) {
+            throw new InvalidAttributeValueException(String.format("Poster ID %s was invalid!", editPostBodyRequest.getPosterID()));
+        }
 
         Post post = postDao.getPost(editPostBodyRequest.getPostID());
 

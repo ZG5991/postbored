@@ -3,18 +3,26 @@ package postbored.activity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.stubbing.Answer;
+import postbored.activity.requests.DeletePostRequest;
 import postbored.activity.requests.EditPostBodyRequest;
 import postbored.activity.requests.NewPostRequest;
+import postbored.activity.results.DeletePostResult;
 import postbored.activity.results.EditPostBodyResult;
 import postbored.activity.results.NewPostResult;
 import postbored.dynamodb.PostDao;
 import postbored.dynamodb.models.Post;
+import postbored.models.PostModel;
+import postbored.utilities.ModelConverter;
 
 import javax.management.InvalidAttributeValueException;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class EditPostBodyActivityTest {
@@ -22,85 +30,102 @@ public class EditPostBodyActivityTest {
     private PostDao postDao;
 
     private EditPostBodyActivity editPostBodyActivity;
+    private NewPostActivity newPostActivity;
+    private ModelConverter converter;
+    private NewPostRequest newPostRequest;
 
     @BeforeEach
     void setUp() {
         openMocks(this);
         editPostBodyActivity = new EditPostBodyActivity(postDao);
+        newPostActivity = new NewPostActivity(postDao);
+        converter = new ModelConverter();
     }
 
     @Test
     public void handleRequest_withAllValues_editsAndSavesPostWithRelevantInput() throws InvalidAttributeValueException {
-        // GIVEN
-
-        String expectedPosterID = "expectedPosterID";
-        String expecttedPostID = "expectedPostID";
-
+        // GIVEN - a valid post and edited value to pass in.
         Post post = new Post();
-        post.setPostID(expecttedPostID);
-        post.setPosterID(expectedPosterID);
-        post.setPostBody("someBody");
+        post.setPostID("1");
+        post.setPostTitle("postTitle");
+        post.setPostBody("postBody");
+        post.setPosterID("posterID");
+        post.setPosterName("posterName");
+        post.setComments(Collections.emptyList());
+        post.setTopic("topic");
+        post.setLikesCounter(0);
 
-        System.out.println(post.getPosterID());
-        System.out.println(post.getPostID());
-        System.out.println(post.getPostBody());
+        String newBody = "expectedNewPostBody";
 
-        postDao.savePost(post);
+        when(postDao.getPost("1")).thenReturn(post);
+        assertEquals(post.getPostBody(), "postBody");
 
-        System.out.println(postDao.getPost(post.getPostID()).toString());
+        //WHEN + THEN edit request is handed the new value, the change is reflected in the saved post object
 
-        EditPostBodyRequest request = EditPostBodyRequest.builder()
-                .withPosterID(expectedPosterID)
-                .withPostBody("newPostBody")
-                .withPostID(expecttedPostID)
-                .build();
+        EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), newBody, post.getPosterID());
+        assertEquals(newBody, editPostBodyRequest.getPostBody());
 
-        // WHEN
-        EditPostBodyResult result = editPostBodyActivity.handleRequest(request);
-        System.out.println(postDao.getPost(post.getPostID()));
-        // THEN
+        EditPostBodyResult editPostBodyResult = editPostBodyActivity.handleRequest(editPostBodyRequest);
+        assertEquals(newBody, editPostBodyResult.getPost().getPostBody());
 
-        assertNotNull(result.getPost().getPostID());
-        assertEquals("newPostBody", result.getPost().getPostBody());
-        assertEquals(expectedPosterID, result.getPost().getPosterID());
-        assertEquals(expecttedPostID, result.getPost().getPostID());
+        verify(postDao, times(1)).getPost("1");
+        verify(postDao, times(1)).savePost(post);
     }
 
 
-//    @Test
-//    public void handleRequest_invalidTitle_throwsInvalidAttributeValueException() {
-//        // GIVEN
-//        NewPostRequest request = NewPostRequest.builder()
-//                                            .withPostTitle("I'm illegal")
-//                                            .withPosterID("poster")
-//                                            .build();
-//
-//        // WHEN + THEN
-//        assertThrows(InvalidAttributeValueException.class, () -> newPostActivity.handleRequest(request));
-//    }
-//
-//    @Test
-//    public void handleRequest_invalidPostBody_throwsInvalidAttributeValueException() {
-//        // GIVEN
-//        NewPostRequest request = NewPostRequest.builder()
-//                .withPostTitle("Valid Title")
-//                .withPostBody("Illegal")
-//                .withPosterID("poster")
-//                .build();
-//
-//        // WHEN + THEN
-//        assertThrows(InvalidAttributeValueException.class, () -> newPostActivity.handleRequest(request));
-//    }
-//
-//    @Test
-//    public void handleRequest_invalidPosterID_throwsInvalidAttributeValueException() {
-//        // GIVEN
-//        NewPostRequest request = NewPostRequest.builder()
-//                                            .withPostTitle("Valid Title")
-//                                            .withPosterID("\"illegal\" ID")
-//                                            .build();
-//
-//        // WHEN + THEN
-//        assertThrows(InvalidAttributeValueException.class, () -> newPostActivity.handleRequest(request));
-//    }
+    @Test
+    public void handleRequest_invalidBoddy_throwsInvalidAttributeValueException() {
+        // GIVEN
+        Post post = new Post();
+        post.setPostID("1");
+        post.setPostTitle("postTitle");
+        post.setPostBody(null);
+        post.setPosterID("posterID");
+        post.setPosterName("posterName");
+        post.setComments(Collections.emptyList());
+        post.setTopic("topic");
+        post.setLikesCounter(0);
+
+        EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), post.getPostBody(), post.getPosterID());
+
+        // WHEN + THEN
+        assertThrows(InvalidAttributeValueException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
+    }
+
+    @Test
+    public void handleRequest_invalidUserID_throwsInvalidAttributeValueException() {
+        // GIVEN
+        Post post = new Post();
+        post.setPostID("1");
+        post.setPostTitle("postTitle");
+        post.setPostBody("body");
+        post.setPosterID(null);
+        post.setPosterName("posterName");
+        post.setComments(Collections.emptyList());
+        post.setTopic("topic");
+        post.setLikesCounter(0);
+
+        EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), post.getPostBody(), post.getPosterID());
+
+        // WHEN + THEN
+        assertThrows(InvalidAttributeValueException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
+    }
+
+@Test
+public void handleRequest_invalidPostID_throwsInvalidAttributeValueException() {
+    // GIVEN
+    Post post = new Post();
+    post.setPostTitle("postTitle");
+    post.setPostBody("body");
+    post.setPosterID("Post");
+    post.setPosterName("posterName");
+    post.setComments(Collections.emptyList());
+    post.setTopic("topic");
+    post.setLikesCounter(0);
+
+    EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), post.getPostBody(), post.getPosterID());
+
+    // WHEN + THEN
+    assertThrows(InvalidAttributeValueException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
+}
 }
