@@ -65,9 +65,9 @@ public class EditPostBodyRequest {
 
         public EditPostBodyRequest build() {
             return new EditPostBodyRequest(
+                    postID,
                     postBody,
-                    posterID,
-                    postID
+                    posterID
                     );
         }
     }
