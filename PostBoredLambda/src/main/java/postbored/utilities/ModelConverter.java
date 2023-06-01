@@ -23,6 +23,24 @@ public class ModelConverter {
                 .build();
     }
 
+    public Post toPost(PostModel postModel) {
+
+        LocalDateTimeConverter converter = new LocalDateTimeConverter();
+        Post post = new Post();
+
+        post.setPostID(postModel.getPostID());
+        post.setDateSent(converter.unconvert(postModel.getTimeSent()));
+        post.setPostTitle(postModel.getPostTitle());
+        post.setPostBody(postModel.getPostBody());
+        post.setPosterID(postModel.getPosterID());
+        post.setPosterName(postModel.getPosterName());
+        post.setTopic(postModel.getTopic());
+        post.setComments(postModel.getComments());
+        post.setLikesCounter(postModel.getLikesCounter());
+
+        return post;
+    }
+
     public CommentModel toCommentModel(Comment comment) {
         return CommentModel.builder()
                 .withCommentID(comment.getCommentID())

@@ -2,6 +2,7 @@ package postbored.dependency;
 
 import dagger.Component;
 import postbored.activity.DeletePostActivity;
+import postbored.activity.EditPostBodyActivity;
 import postbored.activity.GetPostByIDActivity;
 import postbored.activity.NewPostActivity;
 
@@ -23,6 +24,8 @@ public interface ServiceComponent {
     DeletePostActivity provideDeletePostActivity();
 
     GetPostByIDActivity provideGetPostByIDActivity();
+
+    EditPostBodyActivity provideEditPostBodyActivity();
 
 //    /**
 //     * Provides the relevant activity.
