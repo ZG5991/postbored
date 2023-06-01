@@ -39,7 +39,7 @@ public class PostDao {
      * @return the stored Playlist, or null if none was found.
      */
     public Post getPost(String id) {
-        Post post = this.dynamoDbMapper.load(Post.class, id);
+        Post post = dynamoDbMapper.load(Post.class, id);
 
         if (post == null) {
             throw new IllegalArgumentException("Could not find message with id " + id);
@@ -70,22 +70,20 @@ public class PostDao {
      * Initializes non-user input fields for a new unique post.
      * @param post The playlist to save
      */
-    public void savePost(Post post) {
+    public Post savePost(Post post) {
         this.dynamoDbMapper.save(post);
+        return post;
     }
 
 
     /**
      * deletes the given post
      *
-     * @param postID The post ID to delete from the table
+     * @param post The post to delete from the table
      *
      */
-    public void deletePost(String postID) {
-        DynamoDBDeleteExpression deleteExpression = new DynamoDBDeleteExpression();
-        deleteExpression.withConditionExpression(postID);
-
-        this.dynamoDbMapper.delete(Post.class, deleteExpression);
+    public void deletePost(Post post) {
+        this.dynamoDbMapper.delete(post);
     }
 
 

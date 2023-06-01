@@ -3,26 +3,30 @@ package postbored.activity.requests;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @JsonDeserialize(builder = DeletePostRequest.Builder.class)
 public class DeletePostRequest {
 
     private String postID;
+    private String posterID;
 
-    public DeletePostRequest(String postID) {
+    public DeletePostRequest(String postID, String posterID) {
         this.postID = postID;
+        this.posterID = posterID;
     }
 
     public String getPostID() {
         return postID;
     }
 
+    public String getPosterID() {
+        return posterID;
+    }
+
     @Override
     public String toString() {
         return "DeletePostRequest{" +
                 "postID='" + postID + '\'' +
+                ", posterID='" + posterID + '\'' +
                 '}';
     }
 
@@ -31,14 +35,20 @@ public class DeletePostRequest {
     public static class Builder {
 
         private String postID;
+        private String posterID;
 
         public Builder withPostID(String postID) {
             this.postID = postID;
             return this;
         }
 
+        public Builder withPosterID(String posterID) {
+            this.posterID = posterID;
+            return this;
+        }
+
         public DeletePostRequest build() {
-            return new DeletePostRequest(postID);
+            return new DeletePostRequest(postID, posterID);
         }
     }
 }
