@@ -11,7 +11,9 @@ public class DeletePostRequest {
 
     public DeletePostRequest(String postID, String posterID) {
         this.postID = postID;
-        this.posterID = posterID;
+        if(!posterID.equals(builder().posterID)) {
+            this.posterID = null;
+        } else this.posterID = posterID;
     }
 
     public String getPostID() {

@@ -128,4 +128,26 @@ public void handleRequest_invalidPostID_throwsInvalidAttributeValueException() {
     // WHEN + THEN
     assertThrows(InvalidAttributeValueException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
 }
+
+    @Test
+    public void handleRequest_posterIdsDoNotMatch_throwsInvalidAttributeValueException() {
+        // GIVEN
+        Post post = new Post();
+        post.setPostTitle("postTitle");
+        post.setPostBody("body");
+        post.setPosterID("posterID");
+        post.setPosterName("posterName");
+        post.setComments(Collections.emptyList());
+        post.setTopic("topic");
+        post.setLikesCounter(0);
+
+        EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), "newBody", "differentID");
+
+        // WHEN + THEN
+        //throw and catch the exception in activity class from request class
+        assertThrows(InvalidAttributeValueException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
+        assertNotEquals("newBody", post.getPostBody());
+        verify(postDao, times(0)).savePost(post);
+
+    }
 }

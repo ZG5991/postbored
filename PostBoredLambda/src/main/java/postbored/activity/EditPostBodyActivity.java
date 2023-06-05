@@ -42,7 +42,7 @@ public class EditPostBodyActivity {
 
         if (editPostBodyRequest.getPosterID() == null) {
             throw new InvalidAttributeValueException(String.format("Poster ID %s was invalid!", editPostBodyRequest.getPosterID()));
-        }
+        } //move these and catch them here
 
         Post post = postDao.getPost(editPostBodyRequest.getPostID());
 

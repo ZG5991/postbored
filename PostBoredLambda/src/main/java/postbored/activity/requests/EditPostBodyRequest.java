@@ -3,6 +3,8 @@ package postbored.activity.requests;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
+import javax.management.InvalidAttributeValueException;
+
 @JsonDeserialize(builder = EditPostBodyRequest.Builder.class) //getting bad request on class call with lambda, not sure why yet
 public class EditPostBodyRequest {
 
@@ -15,7 +17,11 @@ public class EditPostBodyRequest {
     public EditPostBodyRequest(String postID, String postBody, String posterID) {
         this.postID = postID;
         this.postBody = postBody;
-        this.posterID = posterID;
+
+        if (!posterID.equals(builder().posterID)) {
+            this.posterID = null;
+        } else this.posterID = posterID;
+
     }
 
     public String getPostID() {
@@ -39,6 +45,9 @@ public class EditPostBodyRequest {
                 '}';
     }
 
+    public static <E extends Throwable> void sneakyThrow(Throwable e) throws E{
+        throw (E) e;
+    }
     public static Builder builder() { return new Builder(); }
     @JsonPOJOBuilder
     public static class Builder {
