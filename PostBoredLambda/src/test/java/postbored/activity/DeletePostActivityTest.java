@@ -4,14 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.Null;
+import postbored.Exceptions.UnauthorizedEditException;
 import postbored.activity.requests.DeletePostRequest;
-import postbored.activity.requests.EditPostBodyRequest;
 import postbored.activity.results.DeletePostResult;
 import postbored.dynamodb.PostDao;
 import postbored.dynamodb.models.Post;
-import postbored.models.PostModel;
-
-import javax.management.InvalidAttributeValueException;
 
 import java.util.Collections;
 
@@ -34,7 +32,7 @@ public class DeletePostActivityTest {
     }
 
     @Test
-    public void testHandleRequest_ValidPostId_DeletesPost() throws InvalidAttributeValueException {
+    public void testHandleRequest_ValidPostId_DeletesPost() throws UnauthorizedEditException {
         // GIVEN
 
         Post post = new Post();
@@ -53,7 +51,7 @@ public class DeletePostActivityTest {
     }
 
     @Test
-    public void testHandleRequest_InvalidPostId_ThrowsInvalidAttributeException() {
+    public void testHandleRequest_InvalidPostId_UnauthorizedEditException() {
 
         Post post = new Post();
         post.setPostID(null);
@@ -63,12 +61,12 @@ public class DeletePostActivityTest {
         DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID(), post.getPosterID());
 
         //THEN
-        assertThrows(InvalidAttributeValueException.class,
+        assertThrows(UnauthorizedEditException.class,
                         () -> deletePostActivity.handleRequest(deletePostRequest));
     }
 
     @Test
-    public void testHandleRequest_InvalidPosterId_ThrowsInvalidAttributeException() {
+    public void testHandleRequest_InvalidPosterId_UnauthorizedEditException() {
 
         Post post = new Post();
         post.setPostID("abc");
@@ -78,27 +76,12 @@ public class DeletePostActivityTest {
         DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID(), post.getPosterID());
 
         //THEN
-        assertThrows(InvalidAttributeValueException.class,
+        assertThrows(UnauthorizedEditException.class,
                 () -> deletePostActivity.handleRequest(deletePostRequest));
     }
 
     @Test
-    public void testHandleRequest_posterIDDoesNotMatch_ThrowsInvalidAttributeException() {
-
-        Post post = new Post();
-        post.setPostID("abc");
-        post.setPosterID("def");
-
-        //WHEN
-        DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID(), "ghi");
-
-        //THEN
-        assertThrows(InvalidAttributeValueException.class,
-                () -> deletePostActivity.handleRequest(deletePostRequest));
-    }
-
-    @Test
-    public void handleRequest_posterIdsDoNotMatch_throwsInvalidAttributeValueException() {
+    public void handleRequest_posterIdsDoNotMatch_throwsUnauthorizedEditException() {
         // GIVEN
         Post post = new Post();
         post.setPostTitle("postTitle");
@@ -113,7 +96,7 @@ public class DeletePostActivityTest {
 
         // WHEN + THEN
         //throw and catch the exception in activity class from request class
-        assertThrows(InvalidAttributeValueException.class, () -> deletePostActivity.handleRequest(deletePostRequest));
+        assertThrows(UnauthorizedEditException.class, () -> deletePostActivity.handleRequest(deletePostRequest));
         verify(postDao, times(0)).deletePost(post);
 
     }

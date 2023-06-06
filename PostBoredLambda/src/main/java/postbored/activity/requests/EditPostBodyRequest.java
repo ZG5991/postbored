@@ -2,6 +2,7 @@ package postbored.activity.requests;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import postbored.Exceptions.UnauthorizedEditException;
 
 import javax.management.InvalidAttributeValueException;
 
@@ -17,11 +18,7 @@ public class EditPostBodyRequest {
     public EditPostBodyRequest(String postID, String postBody, String posterID) {
         this.postID = postID;
         this.postBody = postBody;
-
-        if (!posterID.equals(builder().posterID)) {
-            this.posterID = null;
-        } else this.posterID = posterID;
-
+        this.posterID = posterID;
     }
 
     public String getPostID() {

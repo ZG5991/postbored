@@ -2,6 +2,7 @@ package postbored.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import postbored.Exceptions.UnauthorizedEditException;
 import postbored.activity.requests.DeletePostRequest;
 import postbored.activity.results.DeletePostResult;
 
@@ -17,19 +18,22 @@ public class DeletePostLambda extends LambdaActivityRunner<DeletePostRequest, De
                 () -> {
                     DeletePostRequest unauthenticatedRequest = input.fromBody(DeletePostRequest.class);
                     return input.fromUserClaims(claims ->
-                            DeletePostRequest.builder()
-                                    .withPostID(unauthenticatedRequest.getPostID())
-                                    .withPosterID(claims.get("email"))
-                                    .build());
+                     DeletePostRequest.builder()
+                                .withPostID(unauthenticatedRequest.getPostID())
+                                .withPosterID(claims.get("email"))
+                                .build()
+                    );
                 },
         (request, serviceComponent) ->
+
         {
             try {
                 return serviceComponent.provideDeletePostActivity().handleRequest(request);
-            } catch (InvalidAttributeValueException e) {
+            } catch (UnauthorizedEditException e) {
                 throw new RuntimeException(e);
             }
-        });
+        }
+        );
 
     }
 }

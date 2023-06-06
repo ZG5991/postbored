@@ -11,9 +11,7 @@ public class DeletePostRequest {
 
     public DeletePostRequest(String postID, String posterID) {
         this.postID = postID;
-        if(!posterID.equals(builder().posterID)) {
-            this.posterID = null;
-        } else this.posterID = posterID;
+        this.posterID = posterID;
     }
 
     public String getPostID() {
@@ -30,6 +28,10 @@ public class DeletePostRequest {
                 "postID='" + postID + '\'' +
                 ", posterID='" + posterID + '\'' +
                 '}';
+    }
+
+    public static <E extends Throwable> void sneakyThrow(Throwable e) throws E{
+        throw (E) e;
     }
 
     public static Builder builder() { return new Builder(); }

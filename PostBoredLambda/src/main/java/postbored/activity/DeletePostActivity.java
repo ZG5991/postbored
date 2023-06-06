@@ -1,12 +1,12 @@
 package postbored.activity;
 
+import postbored.Exceptions.UnauthorizedEditException;
 import postbored.activity.requests.DeletePostRequest;
 import postbored.activity.results.DeletePostResult;
 import postbored.dynamodb.PostDao;
 import postbored.dynamodb.models.Post;
 
 import javax.inject.Inject;
-import javax.management.InvalidAttributeValueException;
 
 public class DeletePostActivity {
 
@@ -17,32 +17,23 @@ public class DeletePostActivity {
         this.postDao = postDao;
     }
 
-    public DeletePostResult handleRequest(final DeletePostRequest deletePostRequest) throws InvalidAttributeValueException {
-        String postID = deletePostRequest.getPostID();
-        Post post = postDao.getPost(postID);
+    public DeletePostResult handleRequest(final DeletePostRequest deletePostRequest) throws UnauthorizedEditException {
 
-        if (post == null) {
-            throw new InvalidAttributeValueException("Post with ID " + deletePostRequest.getPostID() + " not found.");
+        if (deletePostRequest.getPosterID() == null || deletePostRequest.getPostID() == null) {
+            throw new UnauthorizedEditException();
         }
+
+        Post post = postDao.getPost(deletePostRequest.getPostID());
 
         if (!post.getPosterID().equals(deletePostRequest.getPosterID())) {
-            throw new IllegalArgumentException("User ID ["
-                    +post.getPosterID()+
-                    "] does not match the ID ["
-                    +deletePostRequest.getPosterID()+
-                    "] of original poster!");
+            throw new UnauthorizedEditException();
         }
 
-        try {
-            postDao.deletePost(post);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        postDao.deletePost(post);
 
         return DeletePostResult.builder()
                 .withPostID(deletePostRequest.getPostID())
                 .build();
-
     }
 
 }

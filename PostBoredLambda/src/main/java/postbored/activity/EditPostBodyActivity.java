@@ -2,6 +2,7 @@ package postbored.activity;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import postbored.Exceptions.UnauthorizedEditException;
 import postbored.activity.requests.EditPostBodyRequest;
 import postbored.activity.requests.NewPostRequest;
 import postbored.activity.results.EditPostBodyResult;
@@ -28,23 +29,21 @@ public class EditPostBodyActivity {
         this.postDao = postDao;
     }
 
-    public EditPostBodyResult handleRequest(final EditPostBodyRequest editPostBodyRequest) throws InvalidAttributeValueException{
+    public EditPostBodyResult handleRequest(final EditPostBodyRequest editPostBodyRequest) throws UnauthorizedEditException{
 
         log.info("Received EditPostBodyRequest {}", editPostBodyRequest);
 
-        if (editPostBodyRequest.getPostID() == null) {
-            throw new InvalidAttributeValueException(String.format("Post ID %s was invalid!", editPostBodyRequest.getPostID()));
+        if (editPostBodyRequest.getPostID() == null ||
+                editPostBodyRequest.getPostBody() == null ||
+                editPostBodyRequest.getPosterID() == null ) {
+            throw new UnauthorizedEditException("One or more inputs was null, cannot complete request.");
         }
-
-        if (editPostBodyRequest.getPostBody() == null) {
-            throw new InvalidAttributeValueException(String.format("Post body %s is invalid!", editPostBodyRequest.getPostBody()));
-        }
-
-        if (editPostBodyRequest.getPosterID() == null) {
-            throw new InvalidAttributeValueException(String.format("Poster ID %s was invalid!", editPostBodyRequest.getPosterID()));
-        } //move these and catch them here
 
         Post post = postDao.getPost(editPostBodyRequest.getPostID());
+
+        if (!post.getPosterID().equals(editPostBodyRequest.getPosterID())) {
+            throw new UnauthorizedEditException();
+        }
 
         post.setPostBody(editPostBodyRequest.getPostBody());
 

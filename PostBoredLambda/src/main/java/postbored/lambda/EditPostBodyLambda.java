@@ -2,11 +2,9 @@ package postbored.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import postbored.Exceptions.UnauthorizedEditException;
 import postbored.activity.requests.EditPostBodyRequest;
 import postbored.activity.results.EditPostBodyResult;
-
-
-import javax.management.InvalidAttributeValueException;
 
 public class EditPostBodyLambda extends LambdaActivityRunner<EditPostBodyRequest, EditPostBodyResult>
         implements RequestHandler<AuthenticatedLambdaRequest<EditPostBodyRequest>, LambdaResponse> {
@@ -28,7 +26,7 @@ public class EditPostBodyLambda extends LambdaActivityRunner<EditPostBodyRequest
         {
             try {
                 return serviceComponent.provideEditPostBodyActivity().handleRequest(request);
-            } catch (InvalidAttributeValueException e) {
+            } catch (UnauthorizedEditException e) {
                 throw new RuntimeException(e);
             }
         });
