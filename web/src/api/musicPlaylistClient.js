@@ -15,7 +15,7 @@ export default class MusicPlaylistClient extends BindingClass {
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'viewPost', 'getPlaylistSongs', 'createPlaylist'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -85,6 +85,15 @@ export default class MusicPlaylistClient extends BindingClass {
             this.handleError(error, errorCallback)
         }
     }
+
+    async viewPost(id, errorCallback) {
+            try {
+                const response = await this.axiosClient.get(`posts/postID/${postID}`);
+                return response.data.post;
+            } catch (error) {
+                this.handleError(error, errorCallback)
+            }
+        }
 
     /**
      * Get the songs on a given playlist by the playlist's identifier.

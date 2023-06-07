@@ -291,7 +291,7 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts
+            Path: /posts/postID
             Method: get
 
   #-----------------------------------------------------
