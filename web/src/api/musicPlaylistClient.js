@@ -132,12 +132,12 @@ export default class MusicPlaylistClient extends BindingClass {
         } catch (error) {
             this.handleError(error, errorCallback)
         }
-
+    }
 
     async createPost(postTitle, postBody, errorCallback) {
             try {
                 const token = await this.getTokenOrThrow("Only authenticated users can create playlists.");
-                const response = await this.axiosClient.posts(`post`, {
+                const response = await this.axiosClient.post(`posts`, {
                     postTitle: postTitle,
                     postBody: postBody
                 }, {

@@ -6,7 +6,7 @@ import DataStore from '../util/DataStore';
 /**
  * Logic needed for the create playlist page of the website.
  */
-class CreatePlaylist extends BindingClass {
+class CreatePost extends BindingClass {
     constructor() {
         super();
         this.bindClassMethods(['mount', 'submit', 'redirectToViewPosts'], this);
