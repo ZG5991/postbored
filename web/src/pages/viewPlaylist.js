@@ -47,7 +47,7 @@ class ViewPlaylist extends BindingClass {
      * When the playlist is updated in the datastore, update the playlist metadata on the page.
      */
     addPlaylistToPage() {
-        const playlist = this.dataStore.get('playlist');
+        const playlist = this.dataStore.get('post-list');
         if (playlist == null) {
             return;
         }

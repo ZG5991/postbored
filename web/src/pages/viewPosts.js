@@ -9,7 +9,7 @@ import DataStore from "../util/DataStore";
 class ViewPosts extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'mount', 'addPlaylistToPage', 'addSongsToPage', 'addSong'], this);
+        this.bindClassMethods(['clientLoaded', 'mount', 'addPlaylistToPage', 'addPostsToPage', 'addSong'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addPlaylistToPage);
         this.dataStore.addChangeListener(this.addSongsToPage);
@@ -35,7 +35,7 @@ class ViewPosts extends BindingClass {
      * Add the header to the page and load the MusicPlaylistClient.
      */
     mount() {
-        document.getElementById('add-song').addEventListener('click', this.addSong);
+        document.getElementById('get-post').addEventListener('click', this.viewPost);
 
         this.header.addHeaderToPage();
 
@@ -47,7 +47,7 @@ class ViewPosts extends BindingClass {
      * When the playlist is updated in the datastore, update the playlist metadata on the page.
      */
     addPostsToPage() {
-        const posts = this.dataStore.get('posts');
+        const posts = this.dataStore.get('post-list');
         if (post == null) {
             return;
         }
@@ -82,46 +82,46 @@ class ViewPosts extends BindingClass {
             postsList.appendChild(postContainer);
           });
 
-        document.getElementById('playlist-name').innerText = playlist.name;
-        document.getElementById('playlist-owner').innerText = playlist.customerName;
+        document.getElementById('post-title').innerText = post.title;
+        document.getElementById('post-body').innerText = post.body;
 
-        let tagHtml = '';
-        let tag;
-        for (tag of playlist.tags) {
-            tagHtml += '<div class="tag">' + tag + '</div>';
-        }
-        document.getElementById('tags').innerHTML = tagHtml;
+//        let tagHtml = '';
+//        let tag;
+//        for (tag of playlist.tags) {
+//            tagHtml += '<div class="tag">' + tag + '</div>';
+//        }
+//        document.getElementById('tags').innerHTML = tagHtml;
     }
 
     /**
      * Method to run when the add song playlist submit button is pressed. Call the MusicPlaylistService to add a song to the
      * playlist.
      */
-    async addSong() {
+    async addPost() {
 
         const errorMessageDisplay = document.getElementById('error-message');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
-        const playlist = this.dataStore.get('playlist');
-        if (playlist == null) {
+        const post = this.dataStore.get('posts');
+        if (post == null) {
             return;
         }
 
-        document.getElementById('add-song').innerText = 'Adding...';
-        const asin = document.getElementById('album-asin').value;
-        const trackNumber = document.getElementById('track-number').value;
-        const playlistId = playlist.id;
+        document.getElementById('add-post').innerText = 'Adding...';
+        const title = document.getElementById('post-title').value;
+        const body = document.getElementById('post-body').value;
+        const postID = post.id;
 
-        const songList = await this.client.addSongToPlaylist(playlistId, asin, trackNumber, (error) => {
+        const postList = await this.client.addPostToPostList(postID, (error) => {
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
         });
 
-        this.dataStore.set('songs', songList);
+        this.dataStore.set('posts', postList);
 
-        document.getElementById('add-song').innerText = 'Add Song';
-        document.getElementById("add-song-form").reset();
+        document.getElementById('add-post').innerText = 'Add Post';
+        document.getElementById("add-post-form").reset();
     }
 }
 
@@ -129,8 +129,8 @@ class ViewPosts extends BindingClass {
  * Main method to run when the page contents have loaded.
  */
 const main = async () => {
-    const viewPlaylist = new ViewPlaylist();
-    viewPlaylist.mount();
+    const viewPosts = new ViewPosts();
+    viewPosts.mount();
 };
 
 window.addEventListener('DOMContentLoaded', main);

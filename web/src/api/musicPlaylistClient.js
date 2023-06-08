@@ -15,7 +15,7 @@ export default class MusicPlaylistClient extends BindingClass {
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'viewPost', 'getPlaylistSongs', 'createPlaylist'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'viewPost', 'getPlaylistSongs', 'createPost'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -132,7 +132,24 @@ export default class MusicPlaylistClient extends BindingClass {
         } catch (error) {
             this.handleError(error, errorCallback)
         }
-    }
+
+
+    async createPost(postTitle, postBody, errorCallback) {
+            try {
+                const token = await this.getTokenOrThrow("Only authenticated users can create playlists.");
+                const response = await this.axiosClient.posts(`post`, {
+                    postTitle: postTitle,
+                    postBody: postBody
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                return response.data.post;
+            } catch (error) {
+                this.handleError(error, errorCallback)
+            }
+        }
 
     /**
      * Add a song to a playlist.
@@ -158,6 +175,22 @@ export default class MusicPlaylistClient extends BindingClass {
             this.handleError(error, errorCallback)
         }
     }
+
+    async addPostToPostList(postID, errorCallback) {
+            try {
+                const token = await this.getTokenOrThrow("Only authenticated users can add a post to a list.");
+                const response = await this.axiosClient.post(`posts/${id}`, {
+                    postID: postID,
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                return response.data.postList;
+            } catch (error) {
+                this.handleError(error, errorCallback)
+            }
+        }
 
     /**
      * Search for a soong.
