@@ -15,7 +15,7 @@ export default class MusicPlaylistClient extends BindingClass {
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'viewPost', 'getPlaylistSongs', 'createPost'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPost', 'createPost'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -77,19 +77,11 @@ export default class MusicPlaylistClient extends BindingClass {
      * @param errorCallback (Optional) A function to execute if the call fails.
      * @returns The playlist's metadata.
      */
-    async getPlaylist(id, errorCallback) {
-        try {
-            const response = await this.axiosClient.get(`playlists/${id}`);
-            return response.data.playlist;
-        } catch (error) {
-            this.handleError(error, errorCallback)
-        }
-    }
 
-    async viewPost(id, errorCallback) {
+    async getPost(id, errorCallback) {
             try {
-                const response = await this.axiosClient.get(`posts/postID/${postID}`);
-                return response.data.post;
+                const response = await this.axiosClient.get(`posts/postID`);
+                return response.data.get;
             } catch (error) {
                 this.handleError(error, errorCallback)
             }
@@ -111,28 +103,11 @@ export default class MusicPlaylistClient extends BindingClass {
     }
 
     /**
-     * Create a new playlist owned by the current user.
-     * @param name The name of the playlist to create.
-     * @param tags Metadata tags to associate with a playlist.
+     * Create a new post owned by the current user.
+     * @param name The name of the post to create.
      * @param errorCallback (Optional) A function to execute if the call fails.
-     * @returns The playlist that has been created.
+     * @returns The post that has been created.
      */
-    async createPlaylist(name, tags, errorCallback) {
-        try {
-            const token = await this.getTokenOrThrow("Only authenticated users can create playlists.");
-            const response = await this.axiosClient.post(`playlists`, {
-                name: name,
-                tags: tags
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data.playlist;
-        } catch (error) {
-            this.handleError(error, errorCallback)
-        }
-    }
 
     async createPost(postTitle, postBody, errorCallback) {
             try {
@@ -175,22 +150,6 @@ export default class MusicPlaylistClient extends BindingClass {
             this.handleError(error, errorCallback)
         }
     }
-
-    async addPostToPostList(postID, errorCallback) {
-            try {
-                const token = await this.getTokenOrThrow("Only authenticated users can add a post to a list.");
-                const response = await this.axiosClient.post(`posts/${id}`, {
-                    postID: postID,
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                return response.data.postList;
-            } catch (error) {
-                this.handleError(error, errorCallback)
-            }
-        }
 
     /**
      * Search for a soong.

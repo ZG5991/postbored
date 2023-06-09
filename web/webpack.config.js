@@ -25,7 +25,7 @@ module.exports = {
   entry: {
     createPost: path.resolve(__dirname, 'src', 'pages', 'createPost.js'),
     viewPlaylist: path.resolve(__dirname, 'src', 'pages', 'viewPlaylist.js'),
-    viewPosts: path.resolve(__dirname, 'src', 'pages', 'viewPosts.js')
+    getPost: path.resolve(__dirname, 'src', 'pages', 'getPost.js')
   },
   output: {
     path: path.resolve(__dirname, 'build', 'assets'),
