@@ -22,12 +22,12 @@ public class GetPostByIDActivityTest {
     private PostDao postDao;
 
     @InjectMocks
-    private GetPostByUserActivity getPostByUserActivity;
+    private GetPostByIDActivity getPostByUserActivity;
 
     @BeforeEach
     public void setUp() {
        openMocks(this);
-       getPostByUserActivity = new GetPostByUserActivity(postDao);
+       getPostByUserActivity = new GetPostByIDActivity(postDao);
     }
 
     @Test

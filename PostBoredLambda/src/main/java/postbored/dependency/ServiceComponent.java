@@ -1,10 +1,7 @@
 package postbored.dependency;
 
 import dagger.Component;
-import postbored.activity.DeletePostActivity;
-import postbored.activity.EditPostBodyActivity;
-import postbored.activity.GetPostByUserActivity;
-import postbored.activity.NewPostActivity;
+import postbored.activity.*;
 
 import javax.inject.Singleton;
 
@@ -23,9 +20,11 @@ public interface ServiceComponent {
 
     DeletePostActivity provideDeletePostActivity();
 
-    GetPostByUserActivity provideGetPostByIDActivity();
+    GetPostByIDActivity provideGetPostByIDActivity();
 
     EditPostBodyActivity provideEditPostBodyActivity();
+
+    GetPostByPosterNameActivity provideGetPostByPosterNameActivity();
 
 //    /**
 //     * Provides the relevant activity.
