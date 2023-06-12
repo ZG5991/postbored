@@ -1,8 +1,9 @@
 package postbored.activity;
 
-import postbored.activity.requests.GetPostByUserRequest;
-import postbored.activity.results.GetPostByUserResult;
+import postbored.activity.requests.GetPostByIDRequest;
+import postbored.activity.results.GetPostByIDResult;
 import postbored.dynamodb.PostDao;
+import postbored.dynamodb.models.Post;
 import postbored.models.PostModel;
 import postbored.utilities.ModelConverter;
 
@@ -18,16 +19,16 @@ public class GetPostByUserActivity {
         this.postDao = postDao;
     }
 
-    public GetPostByUserResult handleRequest(final GetPostByUserRequest getPostByUserRequest) throws InvalidAttributeValueException {
+    public GetPostByIDResult handleRequest(final GetPostByIDRequest getPostByUserRequest) throws InvalidAttributeValueException {
 
-        if (getPostByUserRequest.getPosterID() == null) {
+        if (getPostByUserRequest.getPostID() == null) {
             throw new InvalidAttributeValueException("UserID [" +
-                    getPostByUserRequest.getPosterID() + "] is invalid!");
+                    getPostByUserRequest.getPostID() + "] is invalid!");
         }
 
-        PostModel postModel = new ModelConverter().toPostModel(postDao.getPost(getPostByUserRequest.getPosterID()));
+        PostModel postModel = new ModelConverter().toPostModel(postDao.getPost(getPostByUserRequest.getPostID()));
 
-        return GetPostByUserResult.builder().withPost(postModel).build();
+        return GetPostByIDResult.builder().withPost(postModel).build();
     }
 
 }

@@ -266,12 +266,12 @@ Resources:
             Path: /posts/postID
             Method: put
 
-  GetPostByUserLambda:
+  GetPostByIDLambda:
     Type: AWS::Serverless::Function
     Properties:
       Role: !GetAtt AccessRole.Arn
       CodeUri: PostBoredLambda
-      Handler: postbored.lambda.GetPostByUserLambda::handleRequest
+      Handler: postbored.lambda.GetPostByIDLambda::handleRequest
       Runtime: java11
       Architectures:
         - x86_64
@@ -283,7 +283,7 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts
+            Path: /posts/postID
             Method: get
 
   #-----------------------------------------------------
@@ -296,13 +296,9 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "postID"
           AttributeType: "S"
-        - AttributeName: "dateSent"
-          AttributeType: "S"
       KeySchema:
         - AttributeName: "postID"
-            KeyType: "HASH"
-        - AttributeName: "dateSent"
-          KeyType: "RANGE"
+          KeyType: "HASH"
       BillingMode: "PAY_PER_REQUEST"
       TableName: "posts"
 

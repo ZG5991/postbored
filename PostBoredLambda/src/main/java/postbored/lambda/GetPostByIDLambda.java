@@ -2,22 +2,22 @@ package postbored.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import postbored.activity.requests.GetPostByUserRequest;
-import postbored.activity.results.GetPostByUserResult;
+import postbored.activity.requests.GetPostByIDRequest;
+import postbored.activity.results.GetPostByIDResult;
 
 import javax.management.InvalidAttributeValueException;
 
-public class GetPostByUserLambda extends LambdaActivityRunner<GetPostByUserRequest, GetPostByUserResult>
-        implements RequestHandler<AuthenticatedLambdaRequest<GetPostByUserRequest>, LambdaResponse> {
+public class GetPostByIDLambda extends LambdaActivityRunner<GetPostByIDRequest, GetPostByIDResult>
+        implements RequestHandler<AuthenticatedLambdaRequest<GetPostByIDRequest>, LambdaResponse> {
 
     @Override
-    public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetPostByUserRequest> input, Context context) {
+    public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetPostByIDRequest> input, Context context) {
         return super.runActivity(
                 () -> {
-                    GetPostByUserRequest unauthenticatedRequest = input.fromBody(GetPostByUserRequest.class);
+                    GetPostByIDRequest unauthenticatedRequest = input.fromBody(GetPostByIDRequest.class);
                     return input.fromUserClaims(claims ->
-                            GetPostByUserRequest.builder()
-                                    .withPosterID(unauthenticatedRequest.getPosterID())
+                            GetPostByIDRequest.builder()
+                                    .withPostID(unauthenticatedRequest.getPostID())
                                     .build());
                 },
         (request, serviceComponent) ->

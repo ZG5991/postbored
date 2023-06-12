@@ -32,7 +32,7 @@ public class Post {
     }
 
     @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
-    @DynamoDBRangeKey(attributeName = "dateSent")
+    @DynamoDBAttribute(attributeName = "dateSent")
     public LocalDateTime getDateSent() {
         return dateSent;
     }
