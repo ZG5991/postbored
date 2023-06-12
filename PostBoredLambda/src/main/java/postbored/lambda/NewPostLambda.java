@@ -19,10 +19,8 @@ public class NewPostLambda extends LambdaActivityRunner<NewPostRequest, NewPostR
                     return input.fromUserClaims(claims ->
                             NewPostRequest.builder()
                                     .withPosterID(claims.get("email"))
-                                    .withPostTitle(unauthenticatedRequest.getPostTitle())
                                     .withPostBody(unauthenticatedRequest.getPostBody())
                                     .withPosterName(claims.get("name"))
-                                    .withTopic(unauthenticatedRequest.getTopic())
                                     .build());
                 },
         (request, serviceComponent) ->

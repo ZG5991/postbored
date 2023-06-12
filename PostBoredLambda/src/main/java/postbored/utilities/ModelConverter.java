@@ -1,8 +1,6 @@
 package postbored.utilities;
 
-import postbored.dynamodb.models.Comment;
 import postbored.dynamodb.models.Post;
-import postbored.models.CommentModel;
 import postbored.models.PostModel;
 
 
@@ -13,12 +11,9 @@ public class ModelConverter {
         return PostModel.builder()
                 .withPostID(post.getPostID())
                 .withTimeSent(post.getDateSent())
-                .withPostTitle(post.getPostTitle())
                 .withPostBody(post.getPostBody())
                 .withPosterID(post.getPosterID())
                 .withPosterName(post.getPosterName())
-                .withTopic(post.getTopic())
-                .withComments(post.getComments())
                 .withLikesCounter(post.getLikesCounter())
                 .build();
     }
@@ -30,24 +25,12 @@ public class ModelConverter {
 
         post.setPostID(postModel.getPostID());
         post.setDateSent(converter.unconvert(postModel.getTimeSent()));
-        post.setPostTitle(postModel.getPostTitle());
         post.setPostBody(postModel.getPostBody());
         post.setPosterID(postModel.getPosterID());
         post.setPosterName(postModel.getPosterName());
-        post.setTopic(postModel.getTopic());
-        post.setComments(postModel.getComments());
         post.setLikesCounter(postModel.getLikesCounter());
 
         return post;
     }
 
-    public CommentModel toCommentModel(Comment comment) {
-        return CommentModel.builder()
-                .withCommentID(comment.getCommentID())
-                .withTimeSent(comment.getTimeSent())
-                .withCommentContent(comment.getCommentContent())
-                .withCommenterID(comment.getCommenterID())
-                .withPostID(comment.getPostID())
-                .build();
-    }
 }

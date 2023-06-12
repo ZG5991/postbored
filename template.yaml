@@ -202,14 +202,6 @@ Resources:
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/posts"
 
-        - PolicyName: 'AccessCommentsTable'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/comments"
-
   #-----------------------------------------------------
   # Lambda Functions Configuration
   #-----------------------------------------------------
@@ -291,28 +283,32 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts
+            Path: /posts/postID
+            Method: get
+
+  GetPostByPosterNameLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: PostBoredLambda
+      Handler: postbored.lambda.GetPostByPosterNameLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        PostBoredLambda:
+          Type: Api
+          Properties:
+            Path: /posts/posterName
             Method: get
 
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
-
-  CommentTable:
-    Type: 'AWS::DynamoDB::Table'
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: "commentID"
-          AttributeType: "S"
-        - AttributeName: "timeSent"
-          AttributeType: "S"
-      KeySchema:
-        - AttributeName: "commentID"
-          KeyType: "HASH"
-        - AttributeName: "timeSent"
-          KeyType: "RANGE"
-      BillingMode: "PAY_PER_REQUEST"
-      TableName: "comments"
 
   PostTable:
     Type: 'AWS::DynamoDB::Table'
@@ -320,42 +316,11 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "postID"
           AttributeType: "S"
-        - AttributeName: "dateSent"
-          AttributeType: "S"
-        - AttributeName: "topic"
-          AttributeType: "S"
-        - AttributeName: "comments"
-          AttributeType: "S"
       KeySchema:
         - AttributeName: "postID"
           KeyType: "HASH"
       BillingMode: "PAY_PER_REQUEST"
       TableName: "posts"
-      GlobalSecondaryIndexes:
-        - IndexName: "post-date-index"
-          KeySchema:
-            - AttributeName: "postID"
-              KeyType: "HASH"
-            - AttributeName: "dateSent"
-              KeyType: "RANGE"
-          Projection:
-            ProjectionType: "ALL"
-        - IndexName: "topic-index"
-          KeySchema:
-            - AttributeName: "topic"
-              KeyType: "HASH"
-            - AttributeName: "dateSent"
-              KeyType: "RANGE"
-          Projection:
-            ProjectionType: "ALL"
-        - IndexName: "post-comments-index"
-          KeySchema:
-            - AttributeName: "comments"
-              KeyType: "HASH"
-            - AttributeName: "dateSent"
-              KeyType: "RANGE"
-          Projection:
-            ProjectionType: "ALL"
 
 #-----------------------------------------------------
 # The outputs defined below will be printed

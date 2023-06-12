@@ -3,26 +3,13 @@ package postbored.activity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.stubbing.Answer;
 import postbored.Exceptions.UnauthorizedEditException;
-import postbored.activity.requests.DeletePostRequest;
 import postbored.activity.requests.EditPostBodyRequest;
-import postbored.activity.requests.NewPostRequest;
-import postbored.activity.results.DeletePostResult;
 import postbored.activity.results.EditPostBodyResult;
-import postbored.activity.results.NewPostResult;
 import postbored.dynamodb.PostDao;
 import postbored.dynamodb.models.Post;
-import postbored.models.PostModel;
-import postbored.utilities.ModelConverter;
-
-import javax.management.InvalidAttributeValueException;
-
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -31,16 +18,11 @@ public class EditPostBodyActivityTest {
     private PostDao postDao;
 
     private EditPostBodyActivity editPostBodyActivity;
-    private NewPostActivity newPostActivity;
-    private ModelConverter converter;
-    private NewPostRequest newPostRequest;
 
     @BeforeEach
     void setUp() {
         openMocks(this);
         editPostBodyActivity = new EditPostBodyActivity(postDao);
-        newPostActivity = new NewPostActivity(postDao);
-        converter = new ModelConverter();
     }
 
     @Test
@@ -48,12 +30,9 @@ public class EditPostBodyActivityTest {
         // GIVEN - a valid post and edited value to pass in.
         Post post = new Post();
         post.setPostID("1");
-        post.setPostTitle("postTitle");
         post.setPostBody("postBody");
         post.setPosterID("posterID");
         post.setPosterName("posterName");
-        post.setComments(Collections.emptyList());
-        post.setTopic("topic");
         post.setLikesCounter(0);
 
         String newBody = "expectedNewPostBody";
@@ -79,12 +58,9 @@ public class EditPostBodyActivityTest {
         // GIVEN
         Post post = new Post();
         post.setPostID("1");
-        post.setPostTitle("postTitle");
         post.setPostBody(null);
         post.setPosterID("posterID");
         post.setPosterName("posterName");
-        post.setComments(Collections.emptyList());
-        post.setTopic("topic");
         post.setLikesCounter(0);
 
         EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), post.getPostBody(), post.getPosterID());
@@ -98,12 +74,9 @@ public class EditPostBodyActivityTest {
         // GIVEN
         Post post = new Post();
         post.setPostID("1");
-        post.setPostTitle("postTitle");
         post.setPostBody("body");
         post.setPosterID(null);
         post.setPosterName("posterName");
-        post.setComments(Collections.emptyList());
-        post.setTopic("topic");
         post.setLikesCounter(0);
 
         EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), post.getPostBody(), post.getPosterID());
@@ -116,12 +89,9 @@ public class EditPostBodyActivityTest {
 public void handleRequest_invalidPostID_throwsInvalidAttributeValueException() {
     // GIVEN
     Post post = new Post();
-    post.setPostTitle("postTitle");
     post.setPostBody("body");
     post.setPosterID("Post");
     post.setPosterName("posterName");
-    post.setComments(Collections.emptyList());
-    post.setTopic("topic");
     post.setLikesCounter(0);
 
     EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), post.getPostBody(), post.getPosterID());
@@ -134,12 +104,9 @@ public void handleRequest_invalidPostID_throwsInvalidAttributeValueException() {
     public void handleRequest_posterIdsDoNotMatch_throwsInvalidAttributeValueException() {
         // GIVEN
         Post post = new Post();
-        post.setPostTitle("postTitle");
         post.setPostBody("body");
         post.setPosterID("posterID");
         post.setPosterName("posterName");
-        post.setComments(Collections.emptyList());
-        post.setTopic("topic");
         post.setLikesCounter(0);
 
         EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), "newBody", "differentID");

@@ -18,15 +18,14 @@ public class GetPostByIDActivity {
         this.postDao = postDao;
     }
 
-    public GetPostByIDResult handleRequest(final GetPostByIDRequest getPostByIDRequest) throws InvalidAttributeValueException {
+    public GetPostByIDResult handleRequest(final GetPostByIDRequest getPostByUserRequest) throws InvalidAttributeValueException {
 
-        if (getPostByIDRequest.getPostID() == null) {
+        if (getPostByUserRequest.getPostID() == null) {
             throw new InvalidAttributeValueException("UserID [" +
-                    getPostByIDRequest.getPostID() + "] is invalid!");
+                    getPostByUserRequest.getPostID() + "] is invalid!");
         }
 
-        PostModel postModel = new ModelConverter().toPostModel(postDao.getPost(getPostByIDRequest.getPostID()));
-        postDao.getPost(postModel.getPostID());
+        PostModel postModel = new ModelConverter().toPostModel(postDao.getPost(getPostByUserRequest.getPostID()));
 
         return GetPostByIDResult.builder().withPost(postModel).build();
     }

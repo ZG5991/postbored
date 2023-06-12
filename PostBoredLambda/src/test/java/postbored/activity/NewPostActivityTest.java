@@ -30,18 +30,14 @@ public class NewPostActivityTest {
     @Test
     public void handleRequest_withAllValues_createsAndSavesPostWithRelevantInput() throws InvalidAttributeValueException {
         // GIVEN
-        String expectedPostTitle = "expectedPostTitle";
         String expectedPostBody = "expectedPostBody";
         String expectedPosterID = "expectedPosterID";
         String expectedPosterName = "expectedPosterName";
-        String topic = "topic";
 
         NewPostRequest request = NewPostRequest.builder()
                 .withPosterID(expectedPosterID)
                 .withPosterName(expectedPosterName)
-                .withPostTitle(expectedPostTitle)
                 .withPostBody(expectedPostBody)
-                .withTopic(topic)
                 .build();
 
         // WHEN
@@ -51,11 +47,9 @@ public class NewPostActivityTest {
         verify(postDao).savePost(any(Post.class));
 
         assertNotNull(result.getPost().getPostID());
-        assertEquals(expectedPostTitle, result.getPost().getPostTitle());
         assertEquals(expectedPostBody, result.getPost().getPostBody());
         assertEquals(expectedPosterID, result.getPost().getPosterID());
         assertEquals(expectedPosterName, result.getPost().getPosterName());
-        assertEquals(topic, result.getPost().getTopic());
     }
 
 
@@ -63,7 +57,6 @@ public class NewPostActivityTest {
     public void handleRequest_invalidTitle_throwsInvalidAttributeValueException() {
         // GIVEN
         NewPostRequest request = NewPostRequest.builder()
-                                            .withPostTitle("I'm illegal")
                                             .withPosterID("poster")
                                             .build();
 
@@ -75,7 +68,6 @@ public class NewPostActivityTest {
     public void handleRequest_invalidPostBody_throwsInvalidAttributeValueException() {
         // GIVEN
         NewPostRequest request = NewPostRequest.builder()
-                .withPostTitle("Valid Title")
                 .withPostBody("Illegal")
                 .withPosterID("poster")
                 .build();
@@ -88,7 +80,6 @@ public class NewPostActivityTest {
     public void handleRequest_invalidPosterID_throwsInvalidAttributeValueException() {
         // GIVEN
         NewPostRequest request = NewPostRequest.builder()
-                                            .withPostTitle("Valid Title")
                                             .withPosterID("\"illegal\" ID")
                                             .build();
 

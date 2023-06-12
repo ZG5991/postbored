@@ -48,21 +48,12 @@ public class PostDao {
         return post;
     }
 
-    public List<Post> getPostsBetweenDates(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<Post> getPostsByPosterName(String posterName) {
         DynamoDBScanExpression expression = new DynamoDBScanExpression();
-        expression.addFilterCondition(
-                "dateSent",
-                new Condition()
-                        .withComparisonOperator(ComparisonOperator.BETWEEN.toString())
-                        .withAttributeValueList(
-                                new AttributeValue().withS(startDate.toString()),
-                                new AttributeValue().withS(endDate.toString())
-                        )
-        );
+        expression.withFilterExpression("posterName = :posterName")
+                .withExpressionAttributeValues(Map.of(":posterName", new AttributeValue().withS(posterName)));
 
-        PaginatedScanList<Post> scanList = dynamoDbMapper.scan(Post.class, expression);
-
-        return scanList;
+        return dynamoDbMapper.scan(Post.class, expression);
     }
 
     /**

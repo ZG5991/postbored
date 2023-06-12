@@ -8,9 +8,10 @@ public class GetPostByIDRequest {
 
     private String postID;
 
-    public GetPostByIDRequest(String postID) {
-        this.postID = postID;
+    public GetPostByIDRequest(String posterID) {
+        this.postID = posterID;
     }
+
 
     public String getPostID() {
         return postID;
@@ -26,7 +27,6 @@ public class GetPostByIDRequest {
     public static Builder builder() { return new Builder(); }
     @JsonPOJOBuilder
     public static class Builder {
-
         private String postID;
 
         public Builder withPostID(String postID) {

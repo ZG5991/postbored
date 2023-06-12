@@ -3,9 +3,7 @@ package postbored.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import postbored.activity.requests.GetPostByIDRequest;
-import postbored.activity.requests.NewPostRequest;
 import postbored.activity.results.GetPostByIDResult;
-import postbored.activity.results.NewPostResult;
 
 import javax.management.InvalidAttributeValueException;
 
