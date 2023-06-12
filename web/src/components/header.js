@@ -35,7 +35,7 @@ export default class Header extends BindingClass {
         const homeButton = document.createElement('a');
         homeButton.classList.add('header_home');
         homeButton.href = 'index.html';
-        homeButton.innerText = 'Playlists'; //change this later
+        homeButton.innerText = 'PostBored'; //change this later
 
         const siteTitle = document.createElement('div');
         siteTitle.classList.add('site-title');
@@ -63,6 +63,10 @@ export default class Header extends BindingClass {
 
     createLogoutButton(currentUser) {
         return this.createButton(`Logout: ${currentUser.name}`, this.client.logout);
+    }
+
+    createMyPostsButton(currentUser) {
+        return this.createButton(`My Posts`);
     }
 
     createButton(text, clickHandler) {
