@@ -4,14 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Null;
 import postbored.Exceptions.UnauthorizedEditException;
 import postbored.activity.requests.DeletePostRequest;
 import postbored.activity.results.DeletePostResult;
 import postbored.dynamodb.PostDao;
 import postbored.dynamodb.models.Post;
-
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -84,12 +81,9 @@ public class DeletePostActivityTest {
     public void handleRequest_posterIdsDoNotMatch_throwsUnauthorizedEditException() {
         // GIVEN
         Post post = new Post();
-        post.setPostTitle("postTitle");
         post.setPostBody("body");
         post.setPosterID("posterID");
         post.setPosterName("posterName");
-        post.setComments(Collections.emptyList());
-        post.setTopic("topic");
         post.setLikesCounter(0);
 
         DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID(), "differentID");

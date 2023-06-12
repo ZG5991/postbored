@@ -33,10 +33,6 @@ public class NewPostActivity {
             throw new InvalidAttributeValueException("PosterID or Name could not be found.");
         }
 
-        if (newPostRequest.getPostTitle().isEmpty() || newPostRequest.getPostTitle() == null) {
-            throw new InvalidAttributeValueException("Post Title cannot be empty.");
-        }
-
         if (newPostRequest.getPostBody().isEmpty() || newPostRequest.getPostBody() == null) {
             throw new InvalidAttributeValueException("Post Body cannot be empty.");
         }
@@ -47,10 +43,7 @@ public class NewPostActivity {
         post.setDateSent(LocalDateTime.now());
         post.setPosterID(newPostRequest.getPosterID());
         post.setPosterName(newPostRequest.getPosterName());
-        post.setPostTitle(newPostRequest.getPostTitle());
         post.setPostBody(newPostRequest.getPostBody());
-        post.setTopic(newPostRequest.getTopic());
-        post.setComments(Collections.emptyList());
         post.setLikesCounter(0);
 
         postDao.savePost(post);

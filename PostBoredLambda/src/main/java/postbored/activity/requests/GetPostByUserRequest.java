@@ -3,23 +3,30 @@ package postbored.activity.requests;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-@JsonDeserialize(builder = GetPostByIDRequest.Builder.class)
-public class GetPostByIDRequest {
+@JsonDeserialize(builder = GetPostByUserRequest.Builder.class)
+public class GetPostByUserRequest {
 
     private String postID;
+    private String posterID;
 
-    public GetPostByIDRequest(String postID) {
+    public GetPostByUserRequest(String postID, String posterID) {
         this.postID = postID;
+        this.posterID = posterID;
     }
 
     public String getPostID() {
         return postID;
     }
 
+    public String getPosterID() {
+        return posterID;
+    }
+
     @Override
     public String toString() {
         return "GetPostByIDRequest{" +
                 "postID='" + postID + '\'' +
+                "posterID='" + posterID + '\'' +
                 '}';
     }
 
@@ -28,14 +35,20 @@ public class GetPostByIDRequest {
     public static class Builder {
 
         private String postID;
+        private String posterID;
 
         public Builder withPostID(String postID) {
             this.postID = postID;
             return this;
         }
 
-        public GetPostByIDRequest build() {
-            return new GetPostByIDRequest(postID);
+        public Builder withPosterID(String posterID) {
+            this.posterID = posterID;
+            return this;
+        }
+
+        public GetPostByUserRequest build() {
+            return new GetPostByUserRequest(postID, posterID);
         }
     }
 }
