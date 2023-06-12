@@ -65,10 +65,6 @@ export default class Header extends BindingClass {
         return this.createButton(`Logout: ${currentUser.name}`, this.client.logout);
     }
 
-    createMyPostsButton(currentUser) {
-        return this.createButton(`My Posts`);
-    }
-
     createButton(text, clickHandler) {
         const button = document.createElement('a');
         button.classList.add('button');
