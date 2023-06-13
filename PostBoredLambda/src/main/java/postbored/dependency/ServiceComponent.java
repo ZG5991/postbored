@@ -26,6 +26,8 @@ public interface ServiceComponent {
 
     GetPostByPosterNameActivity provideGetPostByPosterNameActivity();
 
+    GetAllPostsActivity provideGetAllPostsActivity();
+
 //    /**
 //     * Provides the relevant activity.
 //     * @return CreatePlaylistActivity

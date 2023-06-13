@@ -56,6 +56,10 @@ public class PostDao {
         return dynamoDbMapper.scan(Post.class, expression);
     }
 
+    public List<Post> getAllPosts() {
+        return this.dynamoDbMapper.scan(Post.class, new DynamoDBScanExpression());
+    }
+
     /**
      * Saves (creates or updates) the given post.
      * Initializes non-user input fields for a new unique post.
