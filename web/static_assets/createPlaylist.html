@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <script type="text/javascript" src="pages/createPost.js"></script>
+    <script type="text/javascript" src="assets/createPost.js"></script>
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
@@ -11,10 +11,10 @@
     <div class="card">
         <h2>Create Post</h2>
         <form class="card-content" id="create-post-form">
-            <p class="hidden error" id="error-post"> </p>
+            <p class="hidden error" id="error-message"> </p>
             <p class="form-field">
                 <label>Say something!</label>
-                <textarea type="text" id="postBody" class="postBody" placeholder="main text"
+                <textarea id="post-body" placeholder="main text"
                           data-tip="post body must contain text"></textarea>
             </p>
             <p>

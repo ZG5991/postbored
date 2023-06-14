@@ -105,21 +105,21 @@ export default class MusicPlaylistClient extends BindingClass {
      * @param errorCallback (Optional) A function to execute if the call fails.
      * @returns The playlist that has been created.
      */
-    async createPost(body, errorCallback) {
-        try {
-            const token = await this.getTokenOrThrow("Only authenticated users can create posts.");
-            const response = await this.axiosClient.post(`posts`, {
-                postBody: body
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data.post;
-        } catch (error) {
-            this.handleError(error, errorCallback)
-        }
-    }
+   async createPost(postBody, errorCallback) {
+               try {
+                   const token = await this.getTokenOrThrow("Only authenticated users can create playlists.");
+                   const response = await this.axiosClient.post(`posts`, {
+                       postBody: postBody
+                   }, {
+                       headers: {
+                           Authorization: `Bearer ${token}`
+                       }
+                   });
+                   return response.data.post;
+               } catch (error) {
+                   this.handleError(error, errorCallback)
+               }
+           }
 
     /**
      * Add a song to a playlist.

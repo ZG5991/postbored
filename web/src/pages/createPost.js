@@ -9,9 +9,10 @@ import DataStore from '../util/DataStore';
 class CreatePost extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['mount', 'submit', 'redirectToViewPlaylist'], this);
+        this.bindClassMethods(['mount', 'submit', 'redirectToViewPosts'], this);
         this.dataStore = new DataStore();
-        this.dataStore.addChangeListener(this.redirectToViewPlaylist);
+        console.log(this.redirectToViewPosts);
+        this.dataStore.addChangeListener(this.redirectToViewPosts);
         this.header = new Header(this.dataStore);
     }
 
@@ -41,23 +42,24 @@ class CreatePost extends BindingClass {
         const origButtonText = createButton.innerText;
         createButton.innerText = 'Loading...';
 
-        const postBody = document.getElementById('postBody').value;
+        const postBody = document.getElementById('post-body').value;
 
         const post = await this.client.createPost(postBody, (error) => {
             createButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
         });
+
         this.dataStore.set('post', post);
     }
 
     /**
-     * When the playlist is updated in the datastore, redirect to the view playlist page.
+     * When the post is updated in the datastore, redirect to the view playlist page.
      */
-    redirectToViewPlaylist() {
+    redirectToViewPosts() {
         const post = this.dataStore.get('post');
         if (post != null) {
-            window.location.href = `index.html`;
+            window.location.href = `/index.html?postID=${post.postID}`;
         }
     }
 }
@@ -71,3 +73,5 @@ const main = async () => {
 };
 
 window.addEventListener('DOMContentLoaded', main);
+
+
