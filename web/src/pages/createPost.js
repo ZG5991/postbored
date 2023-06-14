@@ -41,7 +41,6 @@ class CreatePost extends BindingClass {
         const origButtonText = createButton.innerText;
         createButton.innerText = 'Loading...';
 
-        const postTitle = document.getElementById('postTitle').value;
         const postBody = document.getElementById('postBody').value;
 
         let tags;
