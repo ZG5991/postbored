@@ -23,7 +23,7 @@ module.exports = {
     usedExports: true
   },
   entry: {
-    createPlaylist: path.resolve(__dirname, 'src', 'pages', 'createPost.js'),
+    createPost: path.resolve(__dirname, 'src', 'pages', 'createPost.js'),
     viewPlaylist: path.resolve(__dirname, 'src', 'pages', 'viewPlaylist.js'),
     searchPlaylists: path.resolve(__dirname, 'src', 'pages', 'searchPlaylists.js'),
     viewAllPostsIndex: path.resolve(__dirname, 'src', 'pages', 'viewAllPostsIndex.js'),

@@ -43,14 +43,7 @@ class CreatePost extends BindingClass {
 
         const postBody = document.getElementById('postBody').value;
 
-        let tags;
-        if (tagsText.length < 1) {
-            postBody = null;
-        } else {
-            postBody = postBody;
-        }
-
-        const post = await this.client.createPost(postTitle, postBody, (error) => {
+        const post = await this.client.createPost(postBody, (error) => {
             createButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
@@ -64,7 +57,7 @@ class CreatePost extends BindingClass {
     redirectToViewPlaylist() {
         const post = this.dataStore.get('post');
         if (post != null) {
-            window.location.href = `/posts.html?id=${posts.postID}`;
+            window.location.href = `index.html`;
         }
     }
 }
@@ -73,8 +66,8 @@ class CreatePost extends BindingClass {
  * Main method to run when the page contents have loaded.
  */
 const main = async () => {
-    const createPlaylist = new CreatePlaylist();
-    createPlaylist.mount();
+    const createPost = new CreatePost();
+    createPost.mount();
 };
 
 window.addEventListener('DOMContentLoaded', main);
