@@ -20,7 +20,11 @@ class ViewPostsByUser extends BindingClass {
      * Once the client is loaded, get the playlist metadata and song list.
      */
     async clientLoaded() {
+        console.log("getting user info...");
+
         const posterName = await this.client.getIdentity();
+
+        console.log("getting user posts...");
         const userposts = await this.client.getAllPostsForUser(posterName.name);
         this.dataStore.set('users-posts', userposts);
     }
@@ -38,8 +42,8 @@ class ViewPostsByUser extends BindingClass {
      * When the playlist is updated in the datastore, update the playlist metadata on the page.
      */
     addPostsToPage() {
-        const playlist = this.dataStore.get('users-posts');
-        if (playlist == null) {
+        const posts = this.dataStore.get('users-posts');
+        if (posts == null) {
             return;
         }
 
