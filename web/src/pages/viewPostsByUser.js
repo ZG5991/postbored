@@ -23,6 +23,7 @@ class ViewPostsByUser extends BindingClass {
         console.log("getting user info...");
 
         const posterName = await this.client.getIdentity();
+        console.log(posterName.name);
 
         console.log("getting user posts...");
         const userposts = await this.client.getAllPostsForUser(posterName.name);
@@ -47,7 +48,9 @@ class ViewPostsByUser extends BindingClass {
             return;
         }
 
+
         const container = document.getElementById('users-posts'); // Assuming there's a container element with the ID 'post-container'
+        console.log("created container of user posts.");
 
                  posts.forEach(post => {
                     const postElement = document.createElement('post-container');

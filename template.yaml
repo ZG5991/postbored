@@ -283,7 +283,7 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts/postID
+            Path: /posts/{postID}
             Method: get
 
   GetPostByPosterNameLambda:
@@ -303,7 +303,7 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts/posterName
+            Path: /posts/{posterName}
             Method: get
 
   GetAllPostsLambda:

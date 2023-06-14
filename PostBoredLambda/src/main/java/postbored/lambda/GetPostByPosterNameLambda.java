@@ -15,20 +15,8 @@ public class GetPostByPosterNameLambda extends LambdaActivityRunner<GetPostByPos
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetPostByPosterNameRequest> input, Context context) {
         return super.runActivity(
-                () -> {
-                    GetPostByPosterNameRequest unauthenticatedRequest = input.fromBody(GetPostByPosterNameRequest.class);
-                    return input.fromUserClaims(claims ->
-                            GetPostByPosterNameRequest.builder()
-                                    .withPosterName((unauthenticatedRequest.getPosterName()))
-                                    .build());
-                },
-        (request, serviceComponent) ->
-        {
-            try {
-                return serviceComponent.provideGetPostByPosterNameActivity().handleRequest(request);
-            } catch (InvalidAttributeValueException e) {
-                throw new RuntimeException(e);
-            }
-        });
+                () -> input.fromPath(path -> GetPostByPosterNameRequest.builder().withPosterName(path.get("posterName")).build()),
+                (request, serviceComponent) ->
+           serviceComponent.provideGetPostByPosterNameActivity().handleRequest(request));
     }
 }

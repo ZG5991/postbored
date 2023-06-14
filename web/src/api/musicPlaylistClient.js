@@ -89,14 +89,19 @@ export default class MusicPlaylistClient extends BindingClass {
         }
     }
 
-    async getAllPostsForUser(posterName, errorCallback) {
-            try {
-                const response = await this.axiosClient.get(`posts/posterName`);
-                return response.data.posts;
-            } catch (error) {
-                this.handleError(error, errorCallback);
-            }
+    async getAllPostsForUser(userName, errorCallback) {
+        console.log("Client attempting to get posts for user...");
+      
+        try {
+          const response = await this.axiosClient.get(`/posts/${userName}`);
+
+          console.log("Client successfully got posts!");
+      
+          return response.data.posts;
+        } catch (error) {
+          this.handleError(error, errorCallback);
         }
+      }
 
     /**
      * Create a new playlist owned by the current user.

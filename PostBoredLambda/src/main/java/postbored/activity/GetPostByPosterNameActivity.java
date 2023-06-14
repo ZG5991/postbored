@@ -22,10 +22,10 @@ public class GetPostByPosterNameActivity {
         this.postDao = postDao;
     }
 
-    public GetPostByPosterNameResult handleRequest(final GetPostByPosterNameRequest getPostByPosterNameRequest) throws InvalidAttributeValueException {
+    public GetPostByPosterNameResult handleRequest(final GetPostByPosterNameRequest getPostByPosterNameRequest) {
 
         if (getPostByPosterNameRequest.getPosterName() == null) {
-            throw new InvalidAttributeValueException("Username [" +
+            throw new RuntimeException("Username [" +
                     getPostByPosterNameRequest.getPosterName() + "] is invalid!");
         }
 
