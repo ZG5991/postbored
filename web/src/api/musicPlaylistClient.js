@@ -82,14 +82,14 @@ export default class MusicPlaylistClient extends BindingClass {
 
     async getAllPosts(errorCallback) {
         try {
-            const response = await this.axiosClient.get(`posts/`);
-            return response.data.posts;
+            const response = await this.axiosClient.get(`posts`);
+            return response.data;
         } catch (error) {
             this.handleError(error, errorCallback);
         }
     }
 
-    async getAllPostsForUser(errorCallback) {
+    async getAllPostsForUser(posterName, errorCallback) {
             try {
                 const response = await this.axiosClient.get(`posts/posterName`);
                 return response.data.posts;

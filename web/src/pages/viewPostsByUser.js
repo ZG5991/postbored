@@ -20,7 +20,8 @@ class ViewPostsByUser extends BindingClass {
      * Once the client is loaded, get the playlist metadata and song list.
      */
     async clientLoaded() {
-        const userposts = await this.client.getAllPostsForUser();
+        const posterName = await this.client.getIdentity();
+        const userposts = await this.client.getAllPostsForUser(posterName.name);
         this.dataStore.set('users-posts', userposts);
     }
 
