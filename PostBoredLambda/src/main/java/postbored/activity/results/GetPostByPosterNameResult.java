@@ -2,21 +2,23 @@ package postbored.activity.results;
 
 import postbored.models.PostModel;
 
-public class GetPostByPosterNameResult {
-    private final PostModel post;
+import java.util.List;
 
-    public GetPostByPosterNameResult(PostModel post) {
-        this.post = post;
+public class GetPostByPosterNameResult {
+    private final List<PostModel> postList;
+
+    public GetPostByPosterNameResult(List<PostModel> postList) {
+        this.postList = postList;
     }
 
-    public PostModel getPost() {
-        return post;
+    public List<PostModel> getPosts() {
+        return postList;
     }
 
     @Override
     public String toString() {
         return "GetPostByPosterNameResult{" +
-                "post=" + post +
+                "post=" + postList +
                 '}';
     }
 
@@ -26,15 +28,15 @@ public class GetPostByPosterNameResult {
     }
 
     public static class Builder {
-        private PostModel post;
+        private List<PostModel> postList;
 
-        public Builder withPost(PostModel post) {
-            this.post = post;
+        public Builder withPosts(List<PostModel> postList) {
+            this.postList = postList;
             return this;
         }
 
         public GetPostByPosterNameResult build() {
-            return new GetPostByPosterNameResult(post);
+            return new GetPostByPosterNameResult(postList);
         }
     }
 }

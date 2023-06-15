@@ -13,16 +13,8 @@ public class GetAllPostsLambda extends LambdaActivityRunner<GetAllPostsRequest, 
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetAllPostsRequest> input, Context context) {
         return super.runActivity(
-                () -> input.fromUserClaims(claims ->
-                        GetAllPostsRequest.builder()
-                                .build()),
-        (request, serviceComponent) ->
-        {
-            try {
-                return serviceComponent.provideGetAllPostsActivity().handleRequest(request);
-            } catch (InvalidAttributeValueException e) {
-                throw new RuntimeException(e);
-            }
-        });
+                () -> input.fromPath(path -> GetAllPostsRequest.builder().build()),
+                (request, serviceComponent) ->
+            serviceComponent.provideGetAllPostsActivity().handleRequest(request));
     }
 }

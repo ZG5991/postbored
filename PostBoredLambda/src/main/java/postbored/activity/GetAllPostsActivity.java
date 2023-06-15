@@ -23,7 +23,7 @@ public class GetAllPostsActivity {
         this.postDao = postDao;
     }
 
-    public GetAllPostsResult handleRequest(final GetAllPostsRequest getAllPostsRequest) throws InvalidAttributeValueException {
+    public GetAllPostsResult handleRequest(final GetAllPostsRequest getAllPostsRequest) {
 
         List<PostModel> postModels = new ArrayList<>();
 

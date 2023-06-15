@@ -11,9 +11,12 @@ import postbored.activity.results.GetPostByIDResult;
 import postbored.activity.results.GetPostByPosterNameResult;
 import postbored.dynamodb.PostDao;
 import postbored.dynamodb.models.Post;
+import postbored.models.PostModel;
+import postbored.utilities.ModelConverter;
 
 import javax.management.InvalidAttributeValueException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +38,7 @@ public class GetPostByPosterNameActivityTest {
     }
 
     @Test
-    public void testHandleRequest_ValidPosterId_GetsPost() throws InvalidAttributeValueException {
+    public void testHandleRequest_ValidPosterId_GetsPost() {
         // GIVEN
 
         Post post1 = new Post();
@@ -53,16 +56,18 @@ public class GetPostByPosterNameActivityTest {
         post2.setLikesCounter(1);
 
         GetPostByPosterNameRequest getPostByUserRequest = new GetPostByPosterNameRequest("posterName");
-        when(postDao.getPostsByPosterName(getPostByUserRequest.getPosterName()))
+        when(postDao.getPostsByPosterName("posterName"))
                 .thenReturn(List.of(post1, post2));
 
         // WHEN
         GetPostByPosterNameResult result = getPostByPosterNameActivity.handleRequest(getPostByUserRequest);
-
+        List<PostModel> modelList = new ArrayList<>();
+        modelList.add(new ModelConverter().toPostModel(post1));
+        modelList.add(new ModelConverter().toPostModel(post2));
         // THEN
         verify(postDao, times(1)).getPostsByPosterName("posterName");
-        assertEquals(post1.getPosterName(), result.getPost().getPosterName());
-        assertEquals(post2.getPosterName(), result.getPost().getPosterName());
+        assertEquals(result.getPosts(), modelList);
+        System.out.println(result);
     }
 
 

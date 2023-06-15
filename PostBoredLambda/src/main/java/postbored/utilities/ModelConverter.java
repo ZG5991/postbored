@@ -3,6 +3,9 @@ package postbored.utilities;
 import postbored.dynamodb.models.Post;
 import postbored.models.PostModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ModelConverter {
 
@@ -16,6 +19,24 @@ public class ModelConverter {
                 .withPosterName(post.getPosterName())
                 .withLikesCounter(post.getLikesCounter())
                 .build();
+    }
+
+    public List<PostModel> toPostModelList(List<Post> postList) {
+        List<PostModel> postModels = new ArrayList<>();
+
+        for (Post post : postList) {
+
+           postModels.add(PostModel.builder()
+                    .withPostID(post.getPostID())
+                    .withTimeSent(post.getDateSent())
+                    .withPostBody(post.getPostBody())
+                    .withPosterID(post.getPosterID())
+                    .withPosterName(post.getPosterName())
+                    .withLikesCounter(post.getLikesCounter())
+                    .build());
+        }
+
+        return postModels;
     }
 
     public Post toPost(PostModel postModel) {

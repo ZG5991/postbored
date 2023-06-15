@@ -13,20 +13,9 @@ public class GetPostByIDLambda extends LambdaActivityRunner<GetPostByIDRequest, 
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetPostByIDRequest> input, Context context) {
         return super.runActivity(
-                () -> {
-                    GetPostByIDRequest unauthenticatedRequest = input.fromBody(GetPostByIDRequest.class);
-                    return input.fromUserClaims(claims ->
-                            GetPostByIDRequest.builder()
-                                    .withPostID(unauthenticatedRequest.getPostID())
-                                    .build());
-                },
-        (request, serviceComponent) ->
-        {
-            try {
-                return serviceComponent.provideGetPostByIDActivity().handleRequest(request);
-            } catch (InvalidAttributeValueException e) {
-                throw new RuntimeException(e);
-            }
-        });
+                () -> input.fromPath(path -> GetPostByIDRequest.builder().withPostID(path.get("posterID")).build()),
+                (request, serviceComponent) ->
+                        serviceComponent.provideGetPostByIDActivity().handleRequest(request));
+
     }
 }

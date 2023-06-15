@@ -26,8 +26,11 @@ class ViewPostsByUser extends BindingClass {
         console.log(posterName.name);
 
         console.log("getting user posts...");
+
         const userposts = await this.client.getAllPostsForUser(posterName.name);
         this.dataStore.set('users-posts', userposts);
+
+        console.log("set userposts to datastore");
     }
 
     /**
@@ -53,7 +56,7 @@ class ViewPostsByUser extends BindingClass {
         console.log("created container of user posts.");
 
                  posts.forEach(post => {
-                    const postElement = document.createElement('post-container');
+                    const postElement = document.createElement('div');
                     postElement.textContent = post.postBody;
 
                     container.appendChild(postElement);
