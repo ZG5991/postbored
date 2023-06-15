@@ -11,6 +11,7 @@ import postbored.utilities.ModelConverter;
 
 import javax.inject.Inject;
 import javax.management.InvalidAttributeValueException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GetPostByPosterNameActivity {
@@ -22,21 +23,18 @@ public class GetPostByPosterNameActivity {
         this.postDao = postDao;
     }
 
-    public GetPostByPosterNameResult handleRequest(final GetPostByPosterNameRequest getPostByPosterNameRequest) throws InvalidAttributeValueException {
+    public GetPostByPosterNameResult handleRequest(final GetPostByPosterNameRequest getPostByPosterNameRequest) {
 
         if (getPostByPosterNameRequest.getPosterName() == null) {
-            throw new InvalidAttributeValueException("Username [" +
+            throw new RuntimeException("Username [" +
                     getPostByPosterNameRequest.getPosterName() + "] is invalid!");
         }
 
-        List<Post> postList = postDao.getPostsByPosterName(getPostByPosterNameRequest.getPosterName());
 
-        for (Post p : postList) {
-            PostModel postModel = new ModelConverter().toPostModel(p);
-            return GetPostByPosterNameResult.builder().withPost(postModel).build();
-        }
-
-        return GetPostByPosterNameResult.builder().build();
+        return GetPostByPosterNameResult.builder()
+                .withPosts(new ModelConverter()
+                .toPostModelList(postDao.getPostsByPosterName(getPostByPosterNameRequest.getPosterName())))
+                .build();
     }
 
 }

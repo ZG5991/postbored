@@ -23,19 +23,9 @@ public class GetAllPostsActivity {
         this.postDao = postDao;
     }
 
-    public GetAllPostsResult handleRequest(final GetAllPostsRequest getAllPostsRequest) throws InvalidAttributeValueException {
+    public GetAllPostsResult handleRequest() {
 
-        List<PostModel> postModels = new ArrayList<>();
-
-        for (Post p : postDao.getAllPosts()) {
-
-            PostModel postModel = new ModelConverter().toPostModel(p);
-            postModels.add(postModel);
-
-            return GetAllPostsResult.builder().withPosts(postModels).build();
-        }
-
-        return GetAllPostsResult.builder().withPosts(postModels).build();
+        return GetAllPostsResult.builder().withPosts(new ModelConverter().toPostModelList(postDao.getAllPosts())).build();
     }
 
 }

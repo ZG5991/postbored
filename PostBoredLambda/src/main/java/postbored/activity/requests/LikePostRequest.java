@@ -3,12 +3,12 @@ package postbored.activity.requests;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-@JsonDeserialize(builder = DeletePostRequest.Builder.class)
-public class DeletePostRequest {
+@JsonDeserialize(builder = LikePostRequest.Builder.class)
+public class LikePostRequest {
 
     private String postID;
 
-    public DeletePostRequest(String postID) {
+    public LikePostRequest(String postID) {
         this.postID = postID;
     }
 
@@ -18,7 +18,7 @@ public class DeletePostRequest {
 
     @Override
     public String toString() {
-        return "DeletePostRequest{" +
+        return "LikePostRequest{" +
                 "postID='" + postID + '\'' +
                 '}';
     }
@@ -35,8 +35,8 @@ public class DeletePostRequest {
             return this;
         }
 
-        public DeletePostRequest build() {
-            return new DeletePostRequest(postID);
+        public LikePostRequest build() {
+            return new LikePostRequest(postID);
         }
     }
 }

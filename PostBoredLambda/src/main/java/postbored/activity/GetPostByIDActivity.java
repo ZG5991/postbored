@@ -18,10 +18,10 @@ public class GetPostByIDActivity {
         this.postDao = postDao;
     }
 
-    public GetPostByIDResult handleRequest(final GetPostByIDRequest getPostByUserRequest) throws InvalidAttributeValueException {
+    public GetPostByIDResult handleRequest(final GetPostByIDRequest getPostByUserRequest){
 
         if (getPostByUserRequest.getPostID() == null) {
-            throw new InvalidAttributeValueException("UserID [" +
+            throw new RuntimeException("UserID [" +
                     getPostByUserRequest.getPostID() + "] is invalid!");
         }
 

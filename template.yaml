@@ -243,7 +243,7 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts/postID
+            Path: /posts/{postID}
             Method: delete
 
   EditPostBodyLambda:
@@ -263,7 +263,7 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts/postID
+            Path: /posts/{postID}
             Method: put
 
   GetPostByIDLambda:
@@ -283,7 +283,7 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts/postID
+            Path: /posts/{postID}/postID
             Method: get
 
   GetPostByPosterNameLambda:
@@ -303,7 +303,7 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts/posterName
+            Path: /posts/{posterName}
             Method: get
 
   GetAllPostsLambda:
@@ -325,6 +325,26 @@ Resources:
           Properties:
             Path: /posts
             Method: get
+
+  LikePostLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: PostBoredLambda
+      Handler: postbored.lambda.LikePostLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        PostBoredLambda:
+          Type: Api
+          Properties:
+            Path: /posts/{postID}
+            Method: put
 
   #-----------------------------------------------------
   # DynamoDB Configuration

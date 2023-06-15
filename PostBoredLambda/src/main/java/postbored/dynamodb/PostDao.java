@@ -81,7 +81,12 @@ public class PostDao {
         this.dynamoDbMapper.delete(post);
     }
 
-
+    public void likePost(String id) {
+        Post post = this.dynamoDbMapper.load(Post.class, id);
+        Integer currentLikes = post.getLikesCounter();
+        post.setLikesCounter(currentLikes != null ? currentLikes + 1 : 1);
+        this.dynamoDbMapper.save(post);
+    }
     /**
      * Perform a search (via a "scan") of the playlist table for playlists matching the given criteria.
      *

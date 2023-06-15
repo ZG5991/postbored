@@ -13,27 +13,9 @@ public class DeletePostLambda extends LambdaActivityRunner<DeletePostRequest, De
 
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeletePostRequest> input, Context context) {
-
         return super.runActivity(
-                () -> {
-                    DeletePostRequest unauthenticatedRequest = input.fromBody(DeletePostRequest.class);
-                    return input.fromUserClaims(claims ->
-                     DeletePostRequest.builder()
-                                .withPostID(unauthenticatedRequest.getPostID())
-                                .withPosterID(claims.get("email"))
-                                .build()
-                    );
-                },
-        (request, serviceComponent) ->
-
-        {
-            try {
-                return serviceComponent.provideDeletePostActivity().handleRequest(request);
-            } catch (UnauthorizedEditException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        );
-
+                () ->  input.fromPath(path -> DeletePostRequest.builder().withPostID(path.get("postID")).build()),
+                (request, serviceComponent) ->
+         serviceComponent.provideDeletePostActivity().handleRequest(request));
     }
 }

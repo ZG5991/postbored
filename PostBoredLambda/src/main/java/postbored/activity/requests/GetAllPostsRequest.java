@@ -10,7 +10,7 @@ public class GetAllPostsRequest {
 
     @Override
     public String toString() {
-        return "GetPostByIDRequest";
+        return "GetAllPostsRequest";
     }
 
     public static Builder builder() { return new Builder(); }

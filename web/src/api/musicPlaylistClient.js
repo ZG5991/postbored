@@ -15,7 +15,8 @@ export default class MusicPlaylistClient extends BindingClass {
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPostByID', 'getAllPosts', 'getAllPostsForUser', 'createPost'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPostByID',
+         'getAllPosts', 'getAllPostsForUser', 'createPost', 'deletePost', 'likePost'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -82,21 +83,27 @@ export default class MusicPlaylistClient extends BindingClass {
 
     async getAllPosts(errorCallback) {
         try {
-            const response = await this.axiosClient.get(`posts/`);
+            const response = await this.axiosClient.get(`posts`);
             return response.data.posts;
         } catch (error) {
             this.handleError(error, errorCallback);
         }
     }
 
-    async getAllPostsForUser(errorCallback) {
-            try {
-                const response = await this.axiosClient.get(`posts/posterName`);
-                return response.data.posts;
-            } catch (error) {
-                this.handleError(error, errorCallback);
-            }
-        }
+    async getAllPostsForUser(userName, errorCallback) {
+      console.log("Client attempting to get posts for user...");
+
+      try {
+        const response = await this.axiosClient.get(`/posts/${userName}`); // Use template literal `${}` to include the userName in the URL
+
+        console.log("Client successfully got posts!");
+
+        return response.data.posts; // Access the 'posts' property of the response data
+      } catch (error) {
+        console.error("Error retrieving posts:", error);
+        this.handleError(error, errorCallback); // Call the error handling function or handle the error here
+      }
+    }
 
     /**
      * Create a new playlist owned by the current user.
@@ -121,36 +128,25 @@ export default class MusicPlaylistClient extends BindingClass {
                }
            }
 
-    /**
-     * Add a song to a playlist.
-     * @param id The id of the playlist to add a song to.
-     * @param asin The asin that uniquely identifies the album.
-     * @param trackNumber The track number of the song on the album.
-     * @returns The list of songs on a playlist.
-     */
-//    async addSongToPlaylist(id, asin, trackNumber, errorCallback) {
-//        try {
-//            const token = await this.getTokenOrThrow("Only authenticated users can add a song to a playlist.");
-//            const response = await this.axiosClient.post(`playlists/${id}/songs`, {
-//                id: id,
-//                asin: asin,
-//                trackNumber: trackNumber
-//            }, {
-//                headers: {
-//                    Authorization: `Bearer ${token}`
-//                }
-//            });
-//            return response.data.songList;
-//        } catch (error) {
-//            this.handleError(error, errorCallback)
-//        }
-//    }
+   async deletePost(id, errorCallback) {
+                  try {
+                      const token = await this.getTokenOrThrow("Only authenticated users can delete playlists.");
+                      const response = await this.axiosClient.delete(`posts/${id}`);
+                      return response.data.posts;
+                  } catch (error) {
+                      this.handleError(error, errorCallback)
+                  }
+              }
 
-    /**
-     * Search for a soong.
-     * @param criteria A string containing search criteria to pass to the API.
-     * @returns The playlists that match the search criteria.
-     */
+    async likePost(id, errorCallback) {
+                     try {
+                         const token = await this.getTokenOrThrow("Only authenticated users can delete playlists.");
+                         const response = await this.axiosClient.put(`posts/${id}`);
+                         return response.data.posts;
+                     } catch (error) {
+                         this.handleError(error, errorCallback)
+                     }
+                 }
 //    async search(criteria, errorCallback) {
 //        try {
 //            const queryParams = new URLSearchParams({ q: criteria })
