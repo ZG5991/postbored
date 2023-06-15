@@ -54,7 +54,9 @@ class ViewPostsByUser extends BindingClass {
         const container = document.getElementById('users-posts'); // Assuming there's a container element with the ID 'post-container'
         console.log("created container of user posts.");
 
-          posts.forEach(post => {
+        const sortedPosts = posts.sort((a, b) => new Date(b.timeSent) - new Date(a.timeSent));
+
+          sortedPosts.forEach(post => {
             const postContainer = document.createElement('div'); // Create a container for each post
             postContainer.classList.add('post');
 

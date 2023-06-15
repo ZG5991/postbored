@@ -117,6 +117,12 @@
 }
 
 .date {
+  margin-right: 10px;
+  font-size: 14px;
+  color: gray;
+}
+
+.likes {
   font-size: 14px;
   color: gray;
 }

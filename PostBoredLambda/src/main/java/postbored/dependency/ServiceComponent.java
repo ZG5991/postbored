@@ -20,6 +20,8 @@ public interface ServiceComponent {
 
     DeletePostActivity provideDeletePostActivity();
 
+    LikePostActivity provideLikePostActivity();
+
     GetPostByIDActivity provideGetPostByIDActivity();
 
     EditPostBodyActivity provideEditPostBodyActivity();

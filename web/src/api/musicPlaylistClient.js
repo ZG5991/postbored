@@ -16,7 +16,7 @@ export default class MusicPlaylistClient extends BindingClass {
         super();
 
         const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPostByID',
-         'getAllPosts', 'getAllPostsForUser', 'createPost', 'deletePost'];
+         'getAllPosts', 'getAllPostsForUser', 'createPost', 'deletePost', 'likePost'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -137,6 +137,16 @@ export default class MusicPlaylistClient extends BindingClass {
                       this.handleError(error, errorCallback)
                   }
               }
+
+    async likePost(id, errorCallback) {
+                     try {
+                         const token = await this.getTokenOrThrow("Only authenticated users can delete playlists.");
+                         const response = await this.axiosClient.put(`posts/${id}`);
+                         return response.data.posts;
+                     } catch (error) {
+                         this.handleError(error, errorCallback)
+                     }
+                 }
 //    async search(criteria, errorCallback) {
 //        try {
 //            const queryParams = new URLSearchParams({ q: criteria })
