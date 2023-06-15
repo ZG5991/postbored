@@ -16,7 +16,7 @@ export default class MusicPlaylistClient extends BindingClass {
         super();
 
         const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPostByID',
-         'getAllPosts', 'getAllPostsForUser', 'createPost', 'deletePost', 'likePost'];
+         'getAllPosts', 'getAllPostsForUser', 'createPost', 'deletePost', 'likePost', 'editPost'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -127,6 +127,25 @@ export default class MusicPlaylistClient extends BindingClass {
                    this.handleError(error, errorCallback)
                }
            }
+
+    async editPost(postID, postBody, errorCallback) {
+                                console.log(postID);
+                             console.log(postBody);
+                  try {
+                      const token = await this.getTokenOrThrow("Only authenticated users can edit posts.");
+                      const response = await this.axiosClient.put(`posts/${postID}`, {
+                          postBody: postBody
+                      }, {
+                           headers: {
+                               Authorization: `Bearer ${token}`
+                           }
+                       });
+                      console.log(response.data.post);
+                      return response.data.post;
+                  } catch (error) {
+                      this.handleError(error, errorCallback)
+                  }
+              }
 
    async deletePost(id, errorCallback) {
                   try {
