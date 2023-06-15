@@ -51,7 +51,6 @@ class ViewPostsByUser extends BindingClass {
             return;
         }
 
-
         const container = document.getElementById('users-posts'); // Assuming there's a container element with the ID 'post-container'
         console.log("created container of user posts.");
 

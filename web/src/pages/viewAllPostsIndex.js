@@ -42,15 +42,44 @@ class ViewAllPostsIndex extends BindingClass {
         if (posts == null) {
             return;
         }
-            const container = document.getElementById('all-posts'); // Assuming there's a container element with the ID 'post-container'
 
-         posts.forEach(post => {
-            const postElement = document.createElement('div');
-            postElement.textContent = post.postBody;
+        const container = document.getElementById('all-posts'); // Assuming there's a container element with the ID 'post-container'
 
-            container.appendChild(postElement);
-        });
+        posts.forEach(post => {
+                     const postContainer = document.createElement('div'); // Create a container for each post
+                     postContainer.classList.add('post');
 
+                     const posterInfoContainer = document.createElement('div'); // Create a container for the poster name and date
+                     posterInfoContainer.classList.add('poster-info');
+
+                     const posterNameElement = document.createElement('h5');
+                     const dateSentElement = document.createElement('h6');
+                     const postBodyElement = document.createElement('p');
+
+                     posterNameElement.classList.add('username');
+                     dateSentElement.classList.add('date');
+                     postBodyElement.classList.add('post-body');
+
+                     posterNameElement.textContent = post.posterName;
+                     dateSentElement.textContent = new Date(post.timeSent).toLocaleDateString(undefined, { dateStyle: 'short' });
+                     postBodyElement.textContent = post.postBody;
+
+                     posterInfoContainer.appendChild(posterNameElement);
+                     posterInfoContainer.appendChild(dateSentElement);
+                     postContainer.appendChild(posterInfoContainer);
+                     postContainer.appendChild(postBodyElement);
+
+                     const postButtonsContainer = document.createElement('div');
+                       postButtonsContainer.classList.add('post-buttons');
+
+                       const likeButton = document.createElement('button');
+                       likeButton.textContent = 'Like';
+
+                       postButtonsContainer.appendChild(likeButton);
+                       postContainer.appendChild(postButtonsContainer);
+
+                     container.appendChild(postContainer);
+                   }); // Append the post container to the main container
     }
 
 }
