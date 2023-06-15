@@ -5,8 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import postbored.activity.requests.GetAllPostsRequest;
 import postbored.activity.results.GetAllPostsResult;
 
-import javax.management.InvalidAttributeValueException;
-
 public class GetAllPostsLambda extends LambdaActivityRunner<GetAllPostsRequest, GetAllPostsResult>
         implements RequestHandler<AuthenticatedLambdaRequest<GetAllPostsRequest>, LambdaResponse> {
 
@@ -15,6 +13,6 @@ public class GetAllPostsLambda extends LambdaActivityRunner<GetAllPostsRequest, 
         return super.runActivity(
                 () -> input.fromPath(path -> GetAllPostsRequest.builder().build()),
                 (request, serviceComponent) ->
-            serviceComponent.provideGetAllPostsActivity().handleRequest(request));
+            serviceComponent.provideGetAllPostsActivity().handleRequest());
     }
 }

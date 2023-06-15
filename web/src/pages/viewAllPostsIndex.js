@@ -45,7 +45,7 @@ class ViewAllPostsIndex extends BindingClass {
             const container = document.getElementById('all-posts'); // Assuming there's a container element with the ID 'post-container'
 
          posts.forEach(post => {
-            const postElement = document.createElement('post-container');
+            const postElement = document.createElement('div');
             postElement.textContent = post.postBody;
 
             container.appendChild(postElement);
