@@ -29,14 +29,13 @@ public class DeletePostActivityTest {
     }
 
     @Test
-    public void testHandleRequest_ValidPostId_DeletesPost() throws UnauthorizedEditException {
+    public void testHandleRequest_ValidPostId_DeletesPost() {
         // GIVEN
 
         Post post = new Post();
         post.setPostID("abc");
-        post.setPosterID("def");
 
-        DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID(), post.getPosterID());
+        DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID());
         when(postDao.getPost("abc")).thenReturn(post);
 
         // WHEN
@@ -48,37 +47,21 @@ public class DeletePostActivityTest {
     }
 
     @Test
-    public void testHandleRequest_InvalidPostId_UnauthorizedEditException() {
+    public void testHandleRequest_InvalidPostId_RuntimeException() {
 
         Post post = new Post();
         post.setPostID(null);
-        post.setPosterID("def");
 
         //WHEN
-        DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID(), post.getPosterID());
+        DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID());
 
         //THEN
-        assertThrows(UnauthorizedEditException.class,
+        assertThrows(RuntimeException.class,
                         () -> deletePostActivity.handleRequest(deletePostRequest));
     }
 
     @Test
-    public void testHandleRequest_InvalidPosterId_UnauthorizedEditException() {
-
-        Post post = new Post();
-        post.setPostID("abc");
-        post.setPosterID(null);
-
-        //WHEN
-        DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID(), post.getPosterID());
-
-        //THEN
-        assertThrows(UnauthorizedEditException.class,
-                () -> deletePostActivity.handleRequest(deletePostRequest));
-    }
-
-    @Test
-    public void handleRequest_posterIdsDoNotMatch_throwsUnauthorizedEditException() {
+    public void handleRequest_posterIdsDoNotMatch_throwsRuntimeException() {
         // GIVEN
         Post post = new Post();
         post.setPostBody("body");
@@ -86,11 +69,11 @@ public class DeletePostActivityTest {
         post.setPosterName("posterName");
         post.setLikesCounter(0);
 
-        DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID(), "differentID");
+        DeletePostRequest deletePostRequest = new DeletePostRequest(post.getPostID());
 
         // WHEN + THEN
         //throw and catch the exception in activity class from request class
-        assertThrows(UnauthorizedEditException.class, () -> deletePostActivity.handleRequest(deletePostRequest));
+        assertThrows(RuntimeException.class, () -> deletePostActivity.handleRequest(deletePostRequest));
         verify(postDao, times(0)).deletePost(post);
 
     }

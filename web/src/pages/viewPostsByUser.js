@@ -88,6 +88,20 @@ class ViewPostsByUser extends BindingClass {
               const deleteButton = document.createElement('button');
               deleteButton.textContent = 'Delete';
 
+              deleteButton.addEventListener('click', () => {
+              event.preventDefault();
+
+                  // Call the delete endpoint for the specified post's ID
+                  this.client.deletePost(post.postID)
+                    .then(() => {
+                      // Remove the post container from the DOM after successful deletion
+                      postContainer.remove();
+                    })
+                    .catch(error => {
+                      console.error('Error deleting post:', error);
+                    });
+                });
+
               postButtonsContainer.appendChild(editButton);
               postButtonsContainer.appendChild(deleteButton);
               postContainer.appendChild(postButtonsContainer);
