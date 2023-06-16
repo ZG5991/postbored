@@ -29,20 +29,20 @@ public class EditPostBodyActivity {
         this.postDao = postDao;
     }
 
-    public EditPostBodyResult handleRequest(final EditPostBodyRequest editPostBodyRequest) throws UnauthorizedEditException{
+    public EditPostBodyResult handleRequest(final EditPostBodyRequest editPostBodyRequest) {
 
         log.info("Received EditPostBodyRequest {}", editPostBodyRequest);
 
         if (editPostBodyRequest.getPostID() == null ||
                 editPostBodyRequest.getPostBody() == null ||
                 editPostBodyRequest.getPosterID() == null ) {
-            throw new UnauthorizedEditException("One or more inputs was null, cannot complete request.");
+            throw new RuntimeException("One or more inputs was null, cannot complete request.");
         }
 
         Post post = postDao.getPost(editPostBodyRequest.getPostID());
 
         if (!post.getPosterID().equals(editPostBodyRequest.getPosterID())) {
-            throw new UnauthorizedEditException();
+            throw new RuntimeException();
         }
 
         post.setPostBody(editPostBodyRequest.getPostBody());
