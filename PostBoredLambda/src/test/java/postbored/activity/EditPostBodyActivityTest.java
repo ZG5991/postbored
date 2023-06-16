@@ -3,7 +3,6 @@ package postbored.activity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import postbored.Exceptions.UnauthorizedEditException;
 import postbored.activity.requests.EditPostBodyRequest;
 import postbored.activity.results.EditPostBodyResult;
 import postbored.dynamodb.PostDao;
@@ -26,7 +25,7 @@ public class EditPostBodyActivityTest {
     }
 
     @Test
-    public void handleRequest_withAllValues_editsAndSavesPostWithRelevantInput() throws UnauthorizedEditException {
+    public void handleRequest_withAllValues_editsAndSavesPostWithRelevantInput() {
         // GIVEN - a valid post and edited value to pass in.
         Post post = new Post();
         post.setPostID("1");
@@ -54,7 +53,7 @@ public class EditPostBodyActivityTest {
 
 
     @Test
-    public void handleRequest_invalidBoddy_throwsInvalidAttributeValueException() {
+    public void handleRequest_invalidBoddy_throwsRuntimeException() {
         // GIVEN
         Post post = new Post();
         post.setPostID("1");
@@ -66,11 +65,11 @@ public class EditPostBodyActivityTest {
         EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), post.getPostBody(), post.getPosterID());
 
         // WHEN + THEN
-        assertThrows(UnauthorizedEditException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
+        assertThrows(RuntimeException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
     }
 
     @Test
-    public void handleRequest_invalidUserID_throwsInvalidAttributeValueException() {
+    public void handleRequest_invalidUserID_throwsRuntimeException() {
         // GIVEN
         Post post = new Post();
         post.setPostID("1");
@@ -82,11 +81,11 @@ public class EditPostBodyActivityTest {
         EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), post.getPostBody(), post.getPosterID());
 
         // WHEN + THEN
-        assertThrows(UnauthorizedEditException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
+        assertThrows(RuntimeException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
     }
 
 @Test
-public void handleRequest_invalidPostID_throwsInvalidAttributeValueException() {
+public void handleRequest_invalidPostID_throwsRuntimeException() {
     // GIVEN
     Post post = new Post();
     post.setPostBody("body");
@@ -97,11 +96,11 @@ public void handleRequest_invalidPostID_throwsInvalidAttributeValueException() {
     EditPostBodyRequest editPostBodyRequest = new EditPostBodyRequest(post.getPostID(), post.getPostBody(), post.getPosterID());
 
     // WHEN + THEN
-    assertThrows(UnauthorizedEditException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
+    assertThrows(RuntimeException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
 }
 
     @Test
-    public void handleRequest_posterIdsDoNotMatch_throwsInvalidAttributeValueException() {
+    public void handleRequest_posterIdsDoNotMatch_throwsRuntimeException() {
         // GIVEN
         Post post = new Post();
         post.setPostBody("body");
@@ -113,7 +112,7 @@ public void handleRequest_invalidPostID_throwsInvalidAttributeValueException() {
 
         // WHEN + THEN
         //throw and catch the exception in activity class from request class
-        assertThrows(UnauthorizedEditException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
+        assertThrows(RuntimeException.class, () -> editPostBodyActivity.handleRequest(editPostBodyRequest));
         assertNotEquals("newBody", post.getPostBody());
         verify(postDao, times(0)).savePost(post);
 

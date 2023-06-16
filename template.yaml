@@ -343,7 +343,7 @@ Resources:
         PostBoredLambda:
           Type: Api
           Properties:
-            Path: /posts/{postID}
+            Path: /posts/{postID}/likesCounter
             Method: put
 
   #-----------------------------------------------------
