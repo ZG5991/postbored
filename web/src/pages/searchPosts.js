@@ -21,21 +21,19 @@ const EMPTY_DATASTORE_STATE = {
     [SEARCH_RESULTS_KEY]: [],
 };
 
-
 /**
  * Logic needed for the view playlist page of the website.
  */
-class SearchPlaylists extends BindingClass {
+class SearchPosts extends BindingClass {
     constructor() {
         super();
 
-        this.bindClassMethods(['mount', 'search', 'displaySearchResults', 'getHTMLForSearchResults'], this);
+        this.bindClassMethods(['mount', 'search', 'displaySearchResults'], this);
 
-        // Create a enw datastore with an initial "empty" state.
+        // Create a new datastore with an initial "empty" state.
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.header = new Header(this.dataStore);
         this.dataStore.addChangeListener(this.displaySearchResults);
-        console.log("searchPlaylists constructor");
     }
 
     /**
@@ -43,7 +41,7 @@ class SearchPlaylists extends BindingClass {
      */
     mount() {
         // Wire up the form's 'submit' event and the button's 'click' event to the search method.
-        document.getElementById('search-playlists-form').addEventListener('submit', this.search);
+        document.getElementById('search-posts-form').addEventListener('submit', this.search);
         document.getElementById('search-btn').addEventListener('click', this.search);
 
         this.header.addHeaderToPage();
@@ -52,36 +50,40 @@ class SearchPlaylists extends BindingClass {
     }
 
     /**
-     * Uses the client to perform the search, 
+     * Uses the client to perform the search,
      * then updates the datastore with the criteria and results.
      * @param evt The "event" object representing the user-initiated event that triggered this method.
      */
     async search(evt) {
-        // Prevent submitting the from from reloading the page.
+        // Prevent submitting the form from reloading the page.
         evt.preventDefault();
 
         const searchCriteria = document.getElementById('search-criteria').value;
         const previousSearchCriteria = this.dataStore.get(SEARCH_CRITERIA_KEY);
 
-        // If the user didn't change the search criteria, do nothing
+        // If the user didn't change the search criteria, do nothing.
         if (previousSearchCriteria === searchCriteria) {
             return;
         }
 
         if (searchCriteria) {
-            const results = await this.client.search(searchCriteria);
-
-            this.dataStore.setState({
-                [SEARCH_CRITERIA_KEY]: searchCriteria,
-                [SEARCH_RESULTS_KEY]: results,
-            });
+            try {
+                const results = await this.client.getAllPostsForUser(searchCriteria);
+                this.dataStore.setState({
+                    [SEARCH_CRITERIA_KEY]: searchCriteria,
+                    [SEARCH_RESULTS_KEY]: results,
+                });
+            } catch (error) {
+                console.error("Error retrieving posts:", error);
+                // Handle the error here
+            }
         } else {
             this.dataStore.setState(EMPTY_DATASTORE_STATE);
         }
     }
 
     /**
-     * Pulls search results from the datastore and displays them on the html page.
+     * Pulls search results from the datastore and displays them on the HTML page.
      */
     displaySearchResults() {
         const searchCriteria = this.dataStore.get(SEARCH_CRITERIA_KEY);
@@ -98,44 +100,51 @@ class SearchPlaylists extends BindingClass {
         } else {
             searchResultsContainer.classList.remove('hidden');
             searchCriteriaDisplay.innerHTML = `"${searchCriteria}"`;
-            searchResultsDisplay.innerHTML = this.getHTMLForSearchResults(searchResults);
+
+            if (searchResults.length === 0) {
+                searchResultsDisplay.innerHTML = '<h4>No results found</h4>';
+            } else {
+                const container = document.createElement('div');
+                for (const post of searchResults) {
+                    const postContainer = document.createElement('div');
+                    postContainer.classList.add('post');
+
+                    const posterInfoContainer = document.createElement('div');
+                    posterInfoContainer.classList.add('poster-info');
+
+                    const posterNameElement = document.createElement('h5');
+                    const dateSentElement = document.createElement('h6');
+                    const postBodyElement = document.createElement('p');
+
+                    posterNameElement.classList.add('username');
+                    dateSentElement.classList.add('date');
+                    postBodyElement.classList.add('post-body');
+
+                    posterNameElement.textContent = post.posterName;
+                    dateSentElement.textContent = new Date(post.timeSent).toLocaleDateString(undefined, { dateStyle: 'short' });
+                    postBodyElement.textContent = post.postBody;
+
+                    posterInfoContainer.appendChild(posterNameElement);
+                    posterInfoContainer.appendChild(dateSentElement);
+                    postContainer.appendChild(posterInfoContainer);
+                    postContainer.appendChild(postBodyElement);
+
+                    container.appendChild(postContainer);
+                }
+
+                searchResultsDisplay.innerHTML = '';
+                searchResultsDisplay.appendChild(container);
+            }
         }
     }
-
-    /**
-     * Create appropriate HTML for displaying searchResults on the page.
-     * @param searchResults An array of playlists objects to be displayed on the page.
-     * @returns A string of HTML suitable for being dropped on the page.
-     */
-    getHTMLForSearchResults(searchResults) {
-        if (searchResults.length === 0) {
-            return '<h4>No results found</h4>';
-        }
-
-        let html = '<table><tr><th>Name</th><th>Song Count</th><th>Tags</th></tr>';
-        for (const res of searchResults) {
-            html += `
-            <tr>
-                <td>
-                    <a href="playlist.html?id=${res.id}">${res.name}</a>
-                </td>
-                <td>${res.songCount}</td>
-                <td>${res.tags?.join(', ')}</td>
-            </tr>`;
-        }
-        html += '</table>';
-
-        return html;
-    }
-
 }
 
 /**
  * Main method to run when the page contents have loaded.
  */
 const main = async () => {
-    const searchPlaylists = new SearchPlaylists();
-    searchPlaylists.mount();
+    const searchPosts = new SearchPosts();
+    searchPosts.mount();
 };
 
 window.addEventListener('DOMContentLoaded', main);
