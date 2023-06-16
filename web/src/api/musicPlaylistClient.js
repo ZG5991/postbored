@@ -166,19 +166,6 @@ export default class MusicPlaylistClient extends BindingClass {
                          this.handleError(error, errorCallback)
                      }
                  }
-//    async search(criteria, errorCallback) {
-//        try {
-//            const queryParams = new URLSearchParams({ q: criteria })
-//            const queryString = queryParams.toString();
-//
-//            const response = await this.axiosClient.get(`playlists/search?${queryString}`);
-//
-//            return response.data.playlists;
-//        } catch (error) {
-//            this.handleError(error, errorCallback)
-//        }
-//
-//    }
 
     /**
      * Helper method to log the error and run any error functions.
