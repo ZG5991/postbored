@@ -45,6 +45,7 @@ public class EditPostBodyActivity {
             throw new RuntimeException();
         }
 
+        post.setDateSent(LocalDateTime.now());
         post.setPostBody(editPostBodyRequest.getPostBody());
 
         postDao.savePost(post);
