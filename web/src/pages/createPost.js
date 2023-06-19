@@ -60,7 +60,7 @@ class CreatePost extends BindingClass {
     redirectToViewPosts() {
         const post = this.dataStore.get('post');
         if (post != null) {
-            window.location.href = `/index.html?postID=${post.postID}`;
+            window.location.href = `/index.html`;
         }
     }
 }
