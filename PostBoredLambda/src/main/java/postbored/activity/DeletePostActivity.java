@@ -16,7 +16,7 @@ public class DeletePostActivity {
         this.postDao = postDao;
     }
 
-    public DeletePostResult handleRequest(final DeletePostRequest deletePostRequest){
+    public DeletePostResult handleRequest(final DeletePostRequest deletePostRequest) {
 
         if (deletePostRequest.getPostID() == null) {
             throw new RuntimeException();

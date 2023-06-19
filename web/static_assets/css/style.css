@@ -2,15 +2,15 @@
     /* css variables: https://developer.mozilla.org/en-US/docs/Web/CSS/var */
     --primary-color: #000000;
     --secondary-color: #ffffff;
-    --tertiary-color: #DCDCDC;
+    --tertiary-color: #666699;
     --error-color: #EE3A23;
 }
 
 .background {
-    background-color: #8A8C8F;
+    background: #666699;
     margin: 0;
     counter-reset: section;
-    font-family: "Helvetica Neue",Helvetica,sans-serif;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .header {
@@ -18,8 +18,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
+    background-color: #29293d;
+    color: #666699;
     padding: 4px 20px;
 }
 
@@ -32,7 +32,21 @@
   font-weight: bold;
   text-decoration: none;
   cursor: pointer;
+  display: block; /* Display the buttons in a column */
+  margin-bottom: 2px;
 }
+
+.search-button {
+  background-color: var(--tertiary-color);
+  border: none;
+  color: var(--secondary-color);
+  padding: 4px 8px 4px 8px;
+  text-align: center;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 
 .button-group {
     display: left;
@@ -93,7 +107,7 @@
 }
 
 .card {
-  background-color: white;
+  background: #d9d9e6;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   padding: 20px;

@@ -50,6 +50,7 @@ class CreatePost extends BindingClass {
             errorMessageDisplay.classList.remove('hidden');
         });
 
+
         this.dataStore.set('post', post);
     }
 

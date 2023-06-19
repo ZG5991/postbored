@@ -37,6 +37,9 @@ class ViewAllPostsIndex extends BindingClass {
     /**
      * When the playlist is updated in the datastore, update the playlist metadata on the page.
      */
+
+
+
     addPostsToPage() {
         const posts = this.dataStore.get('all-posts');
         if (posts == null) {

@@ -1,19 +1,11 @@
 package postbored.activity;
 
-import postbored.activity.requests.GetPostByIDRequest;
 import postbored.activity.requests.GetPostByPosterNameRequest;
-import postbored.activity.results.GetPostByIDResult;
 import postbored.activity.results.GetPostByPosterNameResult;
 import postbored.dynamodb.PostDao;
-import postbored.dynamodb.models.Post;
-import postbored.models.PostModel;
 import postbored.utilities.ModelConverter;
 
 import javax.inject.Inject;
-import javax.management.InvalidAttributeValueException;
-import java.util.ArrayList;
-import java.util.List;
-
 public class GetPostByPosterNameActivity {
 
     private final PostDao postDao;

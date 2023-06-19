@@ -2,9 +2,7 @@ package postbored.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import postbored.Exceptions.UnauthorizedEditException;
 import postbored.activity.requests.EditPostBodyRequest;
-import postbored.activity.requests.NewPostRequest;
 import postbored.activity.results.EditPostBodyResult;
 
 public class EditPostBodyLambda extends LambdaActivityRunner<EditPostBodyRequest, EditPostBodyResult>

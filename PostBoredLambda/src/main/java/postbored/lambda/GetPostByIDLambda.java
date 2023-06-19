@@ -5,8 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import postbored.activity.requests.GetPostByIDRequest;
 import postbored.activity.results.GetPostByIDResult;
 
-import javax.management.InvalidAttributeValueException;
-
 public class GetPostByIDLambda extends LambdaActivityRunner<GetPostByIDRequest, GetPostByIDResult>
         implements RequestHandler<AuthenticatedLambdaRequest<GetPostByIDRequest>, LambdaResponse> {
 

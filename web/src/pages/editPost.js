@@ -1,3 +1,5 @@
+// Filename: editPost.js
+
 import MusicPlaylistClient from '../api/musicPlaylistClient';
 import Header from '../components/header';
 import BindingClass from '../util/bindingClass';
@@ -18,6 +20,14 @@ class EditPost extends BindingClass {
         this.header.addHeaderToPage();
 
         this.client = new MusicPlaylistClient();
+
+        // Fetch the post-body from the datastore and set it as default text in the textarea
+        const urlParams = new URLSearchParams(window.location.search);
+        const postBody = urlParams.get('postBody');
+        const textarea = document.getElementById('post-body');
+        textarea.value = postBody;
+
+        console.log(postBody);
     }
 
     async submit(evt) {
@@ -31,11 +41,9 @@ class EditPost extends BindingClass {
         const origButtonText = editButton.innerText;
         editButton.innerText = 'Loading...';
 
-
         const postID = new URLSearchParams(window.location.search).get('postID'); // Get the postID from the URL
-        const postBody = document.getElementById('post-body').value;
 
-        console.log(postBody);
+        const postBody = document.getElementById('post-body').value;
 
         const post = await this.client.editPost(postID, postBody, (error) => {
             editButton.innerText = origButtonText;
@@ -49,7 +57,7 @@ class EditPost extends BindingClass {
     redirectToViewPosts() {
         const post = this.dataStore.get('post');
         if (post != null) {
-            window.location.href = `/index.html?postID=${post.postID}`;
+            window.location.href = `/index.html`;
         }
     }
 }

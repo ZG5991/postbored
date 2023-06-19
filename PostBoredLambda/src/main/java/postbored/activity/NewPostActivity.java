@@ -12,7 +12,6 @@ import postbored.utilities.ModelConverter;
 import javax.inject.Inject;
 import javax.management.InvalidAttributeValueException;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.UUID;
 
 public class NewPostActivity {
