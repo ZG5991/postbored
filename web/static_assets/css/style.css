@@ -7,7 +7,7 @@
 }
 
 .background {
-    background: linear-gradient(to bottom, #9900cc, #00b4d8);
+    background: #666699;
     margin: 0;
     counter-reset: section;
     font-family: "Helvetica Neue", Helvetica, sans-serif;
@@ -18,7 +18,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #666699;
+    background-color: #29293d;
     color: #666699;
     padding: 4px 20px;
 }
@@ -32,7 +32,21 @@
   font-weight: bold;
   text-decoration: none;
   cursor: pointer;
+  display: block; /* Display the buttons in a column */
+  margin-bottom: 2px;
 }
+
+.search-button {
+  background-color: var(--tertiary-color);
+  border: none;
+  color: var(--secondary-color);
+  padding: 4px 8px 4px 8px;
+  text-align: center;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 
 .button-group {
     display: left;

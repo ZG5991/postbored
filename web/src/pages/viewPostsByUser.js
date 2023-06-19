@@ -89,7 +89,11 @@ class ViewPostsByUser extends BindingClass {
               editButton.addEventListener('click', () => {
               event.preventDefault();
               const postID = post.postID;
-              window.location.href = `editPost.html?postID=${postID}`;
+
+              this.dataStore.set('original-body', post.postBody);
+
+
+              window.location.href = `editPost.html?postID=${postID}&postBody=${post.postBody}`;
               });
 
               const deleteButton = document.createElement('button');
