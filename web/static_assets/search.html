@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="assets/searchPosts.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body class="background">
+    <header class="header" id="header"></header>
+    <div class="card">
+        <h2>Search PostBored</h2>
+        <form class="card-content" id="search-posts-form">
+            <p class="form-field">
+                <label>Search posts by Author</label>
+                <input type="text" class="validated-field" id="search-criteria" autofocus>
+                <sub>Search is case-sensitive and names must match exactly.</sub>
+            </p>
+        </form>
+
+            <a href="#" class="search-button" id="search-btn">Search</a>
+
+    </div>
+    <div class="card hidden" id='search-results-container'>
+        <h3>Results for <span id="search-criteria-display"></span></h3>
+        <div id="search-results-display">
+        </div>
+    </div>
+</body>
+
+</html>

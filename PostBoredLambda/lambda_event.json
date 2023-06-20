@@ -1,0 +1,6 @@
+{
+  "postTitle": "Sample Post Title",
+  "postBody": "This is the content of the post.",
+  "topic": "Sample Topic",
+  "comments": ["Comment 1", "Comment 2", "Comment 3"]
+}

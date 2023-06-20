@@ -3,10 +3,10 @@
 
  ## **Problem Statement**
 
-   PostBored is a public message board application for people passionate about sharing ideas.
+   PostBored is a public post board application for people passionate about sharing ideas.
    The goal is to provide an easy to use, responsive web application to allow users to post thier thoughts freely.
    This application should allow users to create and maintain a personal account,
-   post to a public message board, and view posts by other users easily.
+   post to a public post board, and view posts by other users easily.
 
  ## **Top Questions to Resolve in Review**
 
@@ -17,7 +17,7 @@
 
 **as a user, I would like to be able to:**
 - create a unique account for myself
-- post messages to the main page, a message can have one topic. e.g. "food, music, general, etc."
+- post messages to the main page, a post can have one topic. e.g. "food, music, general, etc."
 - view all messages on the main page chronologically by date
 - view all messages on the main page by selected topic
 - view my messages by date on a "my posts" page
@@ -34,12 +34,12 @@
 
  **In Scope**
 
-- post message to the main page board
+- post post to the main page board
 - view all posted messages by date, ascending or descending
 - filter all posts by topic on a main page
 - view my own posted messages and comments on a separate page
-- edit my posted message
-- delete my posted message
+- edit my posted post
+- delete my posted post
 - comment on posts
 - edit my comments
 - delete my comments
@@ -59,130 +59,126 @@ We will store completed exercise logs each in a table in DynamoDB.
 
 ## API
 
-**User Model**
-
-      User Model
-      String userEmail - email of the logged in user
-      List<String> postHistory - a list of Post objects stored by their IDs
-      List<String> commentHistory - a list of Comment objects stored by their IDs
-
 **Post Model**
 
-      String postingUserEmail - see above
-      String timeSent - LocalDateTime of when the message was originally posted or edited
-      String postTitle - title of the message, entered when creating or editing 
-      String postContent - main body of the message, entered when creating or editing
-      String postID - Unique ID of the specific message generated when the message is created
-      String topic - topic ENUM to be selected when creating a new message, default to GENERAL
+      String posterID - cognito email of the poster
+      String posterName - display name of the poster
+      LocalDateTime datePosted - LocalDateTime of when the post was originally posted or edited
+      String postTitle - title of the post, entered when creating or editing 
+      String postContent - main body of the post, entered when creating or editing
+      String postID - Unique ID of the specific post generated when the post is created
+      String topic - topic ENUM to be selected when creating a new post, default to GENERAL
+      Integer likesCounter - number of 'likes' on the post
+      List<String> - comments - list of commentIDs tied to this post
+
 
 **Comment Model**
 
-      String commentingUserEmail - see above
-      String timeSent - LocalDateTime of when the comment was originally posted or edited
+      String commentID - Unique ID of the specific comment generated when the post is created
+      String commenterID - cognito email of the commenter
+      String commenterName - display name of the commenter 
       String commentContent - main body of the comment, entered when creating or editing
-      String commentID - Unique ID of the specific comment generated when the message is created
-      String postID - see above
+      LocalDateTime timePosted - LocalDateTime of when the comment was originally posted or edited
+     
 
-## Post-A-Post Endpoint
+## NewPost Endpoint
 
     Accepts POST requests to /posts
     From the main page
     Accepts data to create a new post on the messageboard with the required fields userID, messageContent, messageId, timeSent, and optional field category.
 
-Client sends create post form to Website New Post page. Website New Post page sends a create request to CreatePostMessageActivity. CreatePostMessageActivity saves updates to the message board database.
+Client sends create post form to Website New Post page. Website New Post page sends a create request to CreatePostMessageActivity. CreatePostMessageActivity saves updates to the post board database.
 
-## GetPostHistoryByDate Endpoint
+## GetPostByDate Endpoint
 
     Accepts GET requests to /postHistory-index
     From the main page
-    Accepts startDate + endDate and returns the list of message board post objects in ascending order by date.
+    Accepts startDate + endDate and returns the list of post board post objects in ascending order by date.
       Client sends get messages form to Website Message Board page. Website Message Board page sends a get request to getMessagesByDateActivity. getMessagesByDateActivity obtains list of messages from database.
 
-## GetPostHistoryByTopic Endpoint
+## GetPostByTopic Endpoint
 
     Accepts GET requests to /topic-index
     From the main page
-    Accepts a :topic and returns the list of message board post objects in ascending order by relevant topic.
+    Accepts a :topic and returns the list of post board post objects in ascending order by relevant topic.
 
 
 ## EditPost Endpoint
 
     Accepts PUT requests to /posts/:postID
-    From the user content page, allows the logged in user to edit a message by
+    From the user content page, allows the logged in user to edit a post by
       messageID, changing existing messageContent for the specified post
 
 ## DeletePost Endpoint
 
     Accepts DELETE requests to /posts/:postID
-    Reads userID of current user, then accepts the postID of the selected message on the user content page
-      and deletes that message, removing it from the table
+    Reads userID of current user, then accepts the postID of the selected post on the user content page
+      and deletes that post, removing it from the table
 
-## PostComment Endpoint
+## NewComment Endpoint
 
     Accepts POST requests to /comments/
     From the main page
     Accepts data to create a new post on the messageboard with the required fields userID, messageContent, messageId, timeSent, and optional field category.
 
-## GetCommentsByDate Endpoint
+## GetPostComments Endpoint
 
-    Accepts GET requests to /commentHistory-index
+    Accepts GET requests to /posts/comments
     From the main page
-    Accepts startTime + endTime and returns the list of message board post objects in descending order under the relevant post.
+    Accepts postID and returns the list of comments associated in order by time under the relevant post.
     the User should be seeing the comments oldest first.
 
 ## EditComment Endpoint
 
-    Accepts PUT requests to /comments/:commentID
+    Accepts PUT requests to /comments/:commentContent
     From the user content page, allows the logged in user to edit a comment by
-      commentID, changing existing messageContent for the specified post
+      commentID, changing existing body for the specified post
 
 ## DeleteComment Endpoint
 
-    Accepts DELETE requests to /posts/:commentID
+    Accepts DELETE requests to /comments/:commentID
     Reads userID of current user, then accepts the commentID of the selected comment on the user content page
-      and deletes that message, removing it from the table
+      and deletes that post, removing it from the table
 
 
 ## Tables
 
-
-   **users**
-
-      String userID (Primary Key ) - user's email
-      List<String> postHistory - list containing a user's messageIDs to query the message table
-      List<String> commentHistory - list containing a user's messageIDs to query the message table
-
    **posts**
       
-      String postID - HASH key UUID for the specific message
+      String postID - HASH key UUID for the specific post
       String timeSent - (Converted from LocalDateTime) - sort key
-      String postTitle - title of the message, limited to x chars
-      String postBody  - main body of the message, limit to x characters.
+      String postTitle - title of the post, limited to x chars
+      String postBody  - main body of the post, limit to x characters.
       String posterID - email of the poster
-      String topic - topic of the specific message
+      String posterName - display name of poster
+      String topic - topic of the specific post
       List<String> comments - a list of commentIDs for the specific post
       Integer likesCounter - number of users who liked the post, dislikes lower the score
 
       Indeces -
       post-time-index - HASH postID, SORT TimeSent - list of the user's posts by id to query from user post page
       topic-index - HASH topic, SORT TimeSent
-      post-comments-index - HASH postID, SORT timeSent - query the comments of a specific post
+      post-comments-index - HASH comments, SORT timeSent - query the comments of a specific post
 
    **comments**
    
-      String commentID - HASH key UUID for the specific message
+      String commentID - HASH key UUID for the specific post
       String timeSent - (Converted from LocalDateTime), use the Time over Date when sorting in order
       String commentContent  - main body of the comment, limit to x characters.
       String commenterID - email of the user who is commenting
       String postID - the specific post being commented on
-
+     
       
 
 ## Pages wireframes
 
 ![image](https://github.com/ZG5991/postbored/assets/92684029/010d25de-e4dc-4366-ba00-eca5d4a99e8b)
-![image](https://github.com/ZG5991/postbored/assets/92684029/7f00a3d1-a436-4e4a-94bc-9076b1bfae42)
-![image](https://github.com/ZG5991/postbored/assets/92684029/d20b8fcd-7340-48bd-98af-be0a907e8d8e)
+![image](https://github.com/ZG5991/postbored/assets/92684029/407c44bd-8569-414f-bc9b-6ff25d8d9f93)
+![image](https://github.com/ZG5991/postbored/assets/92684029/c1b24ad8-0ae4-484b-b4d8-4057b884309f)
+![image](https://github.com/ZG5991/postbored/assets/92684029/aed1f314-f8c7-4234-98cf-e4cde306af46)
+![image](https://github.com/ZG5991/postbored/assets/92684029/aa302b92-f5ff-4682-a9bc-99375eea8403)
+![image](https://github.com/ZG5991/postbored/assets/92684029/73b66103-1778-41a8-bf48-b7829eb2cd17)
 
-//diagram to be inserted upon completion
+
+
  

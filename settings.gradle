@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'postbored'
-include('app')
+include('PostBoredLambda')

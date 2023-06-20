@@ -1,0 +1,383 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  PostBored Message Board App
+
+Parameters:
+
+  CognitoDomain:
+    Type: String
+    Description: A name for the cognito Domain
+    Default: "postbored-service-domain"
+
+  S3Bucket:
+    Type: String
+    Description: Parameter to specify the S3 Bucket to use for deployment
+
+  FrontendDeployment:
+    Default: remote
+    Type: String
+    AllowedValues:
+      - local
+      - remote
+    ConstraintDescription: Must specify 'local' or 'remote' for FrontendDeployment.
+
+Conditions:
+  DeployCloudFront: !Equals
+    - !Ref FrontendDeployment
+    - remote
+
+Globals:
+  Function:
+    Timeout: 20
+
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+      AllowHeaders: "'content-type,authorization'"
+      AllowOrigin: "'*'"
+    Auth:
+      DefaultAuthorizer: CognitoAuthorizer
+      AddDefaultAuthorizerToCorsPreflight: false
+      Authorizers:
+        CognitoAuthorizer:
+          UserPoolArn: !GetAtt UserPool.Arn
+
+Resources:
+
+  #-----------------------------------------------------
+  # Cognito Configuration for user management
+  #-----------------------------------------------------
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      UsernameAttributes:
+        - email
+      UsernameConfiguration:
+        CaseSensitive: false
+      AutoVerifiedAttributes:
+        - email
+      UserPoolName: !Sub ${CognitoDomain}-user-pool
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      AllowedOAuthFlowsUserPoolClient: true
+      CallbackURLs:
+        - http://localhost:8000
+        - !If
+          - DeployCloudFront
+          - !Sub "https://${CloudfrontDistribution.DomainName}"
+          - !Ref "AWS::NoValue"
+      LogoutURLs:
+        - http://localhost:8000
+        - !If
+          - DeployCloudFront
+          - !Sub "https://${CloudfrontDistribution.DomainName}"
+          - !Ref "AWS::NoValue"
+      AllowedOAuthFlows:
+        - code
+        - implicit
+      AllowedOAuthScopes:
+        - phone
+        - email
+        - openid
+        - profile
+      SupportedIdentityProviders:
+        - COGNITO
+      PreventUserExistenceErrors: ENABLED
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Ref CognitoDomain
+      UserPoolId: !Ref UserPool
+
+  #-----------------------------------------------------
+  # CloudFront Configuration
+  #-----------------------------------------------------
+
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Condition: DeployCloudFront
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Serverless frontend website
+  CloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Condition: DeployCloudFront
+    Properties:
+      DistributionConfig:
+        Comment: Cloudfront distribution for serverless website
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: s3-website
+            DomainName: ${S3Bucket}.s3.us-east-2.amazonaws.com
+            OriginPath: /static
+            S3OriginConfig:
+              OriginAccessIdentity:
+                Fn::Sub: origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}
+        DefaultCacheBehavior:
+          Compress: "true"
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          ForwardedValues:
+            QueryString: false
+          TargetOriginId: s3-website
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Condition: DeployCloudFront
+    Properties:
+      Bucket: S3Bucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: s3:GetObject
+            Resource:
+              - arn:aws:s3:::${S3Bucket}/*
+            Principal:
+              AWS: arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity
+                ${CloudFrontOriginAccessIdentity}
+
+
+
+  #-----------------------------------------------------
+  # Role/Permissions/Policy Configuration
+  #-----------------------------------------------------
+
+  AccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole'
+        - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'WriteToCloudWatch'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - cloudwatch:PutMetricData
+                Resource: '*'
+        - PolicyName: 'AccessPostsTable'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/posts"
+
+  #-----------------------------------------------------
+  # Lambda Functions Configuration
+  #-----------------------------------------------------
+
+  NewPostLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: PostBoredLambda
+      Handler: postbored.lambda.NewPostLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        PostBoredLambda:
+          Type: Api
+          Properties:
+            Path: /posts
+            Method: post
+
+  DeletePostLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: PostBoredLambda
+      Handler: postbored.lambda.DeletePostLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        PostBoredLambda:
+          Type: Api
+          Properties:
+            Path: /posts/{postID}
+            Method: delete
+
+  EditPostBodyLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: PostBoredLambda
+      Handler: postbored.lambda.EditPostBodyLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        PostBoredLambda:
+          Type: Api
+          Properties:
+            Path: /posts/{postID}
+            Method: put
+
+  GetPostByPosterNameLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: PostBoredLambda
+      Handler: postbored.lambda.GetPostByPosterNameLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        PostBoredLambda:
+          Type: Api
+          Properties:
+            Path: /author-index/{posterName}
+            Method: get
+
+  GetAllPostsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: PostBoredLambda
+      Handler: postbored.lambda.GetAllPostsLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        PostBoredLambda:
+          Type: Api
+          Properties:
+            Path: /posts
+            Method: get
+
+  LikePostLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: PostBoredLambda
+      Handler: postbored.lambda.LikePostLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        PostBoredLambda:
+          Type: Api
+          Properties:
+            Path: /posts/{postID}/likesCounter
+            Method: put
+
+  #-----------------------------------------------------
+  # DynamoDB Configuration
+  #-----------------------------------------------------
+
+  PostTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "postID"
+          AttributeType: "S"
+        - AttributeName: "posterID" # Add the attribute for GSI
+          AttributeType: "S"       # Define the attribute type
+      KeySchema:
+        - AttributeName: "postID"
+          KeyType: "HASH"
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: "posts"
+      GlobalSecondaryIndexes:
+        - IndexName: "author-index"      # Specify the GSI name
+          KeySchema:
+            - AttributeName: "posterID"  # Specify the attribute used as GSI's hash key
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"         # Adjust projection type based on your needs
+
+#-----------------------------------------------------
+# The outputs defined below will be printed
+#  to the screen after a successful deploy
+#-----------------------------------------------------
+
+Outputs:
+
+  CognitoUserPoolId:
+    Value: UserPool
+    Description: The Cognito User Pool ID (COGNITO_USER_POOL_ID).
+  CognitoUserPoolClientId:
+    Value: UserPoolClient
+    Description: The Cognito User Pool Client ID (COGNITO_USER_POOL_CLIENT_ID).
+  CognitoDomain:
+    Value: ${CognitoDomain}.auth.us-east-2.amazoncognito.com
+    Description: The Cognito Domain (COGNITO_DOMAIN).
+  ApiBaseUrl:
+    Description: API Gateway endpoint base URL for Prod stage (API_BASE_URL).
+    Value: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  CognitoRedirectSignin:
+    Description: The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNIN).
+    Value: https://${CloudfrontDistribution.DomainName}
+    Condition: DeployCloudFront
+  CognitoRedirectSignout:
+    Description: The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNOUT).
+    Value: https://${CloudfrontDistribution.DomainName}
+    Condition: DeployCloudFront
+
+
+
