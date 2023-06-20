@@ -50,7 +50,7 @@ public class Post {
         this.postBody = postContent;
     }
 
-    @DynamoDBAttribute(attributeName = "posterID")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "author-index", attributeName = "posterID")
     public String getPosterID() {
         return posterID;
     }

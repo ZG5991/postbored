@@ -94,7 +94,7 @@ export default class MusicPlaylistClient extends BindingClass {
       console.log("Client attempting to get posts for user...");
 
       try {
-        const response = await this.axiosClient.get(`/posts/${userName}`); // Use template literal `${}` to include the userName in the URL
+        const response = await this.axiosClient.get(`/author-index/${userName}`); // Use template literal `${}` to include the userName in the URL
 
         console.log("Client successfully got posts!");
 
