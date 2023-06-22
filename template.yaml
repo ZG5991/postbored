@@ -8,7 +8,6 @@ Parameters:
   CognitoDomain:
     Type: String
     Description: A name for the cognito Domain
-    Default: "postbored-service-domain"
 
   S3Bucket:
     Type: String
@@ -113,30 +112,30 @@ Resources:
   #-----------------------------------------------------
 
   CloudFrontOriginAccessIdentity:
-    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
     Condition: DeployCloudFront
     Properties:
       CloudFrontOriginAccessIdentityConfig:
-        Comment: Serverless frontend website
+        Comment: 'Serverless frontend website'
   CloudfrontDistribution:
-    Type: AWS::CloudFront::Distribution
+    Type: "AWS::CloudFront::Distribution"
     Condition: DeployCloudFront
     Properties:
       DistributionConfig:
-        Comment: Cloudfront distribution for serverless website
-        DefaultRootObject: index.html
+        Comment: "Cloudfront distribution for serverless website"
+        DefaultRootObject: 'index.html'
         Enabled: true
         HttpVersion: http2
         PriceClass: PriceClass_100
         Origins:
           - Id: s3-website
-            DomainName: ${S3Bucket}.s3.us-east-2.amazonaws.com
+            DomainName: !Sub "${S3Bucket}.s3.us-east-2.amazonaws.com"
             OriginPath: /static
             S3OriginConfig:
               OriginAccessIdentity:
-                Fn::Sub: origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}
+                Fn::Sub: 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
         DefaultCacheBehavior:
-          Compress: "true"
+          Compress: 'true'
           AllowedMethods:
             - GET
             - HEAD
@@ -146,22 +145,20 @@ Resources:
           TargetOriginId: s3-website
           ViewerProtocolPolicy: redirect-to-https
           CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+
   S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Condition: DeployCloudFront
     Properties:
-      Bucket: S3Bucket
+      Bucket: !Ref S3Bucket
       PolicyDocument:
         Statement:
           - Effect: Allow
-            Action: s3:GetObject
+            Action: 's3:GetObject'
             Resource:
-              - arn:aws:s3:::${S3Bucket}/*
+              - !Sub "arn:aws:s3:::${S3Bucket}/*"
             Principal:
-              AWS: arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity
-                ${CloudFrontOriginAccessIdentity}
-
-
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
 
   #-----------------------------------------------------
   # Role/Permissions/Policy Configuration
@@ -349,7 +346,7 @@ Resources:
             - AttributeName: "posterID"  # Specify the attribute used as GSI's hash key
               KeyType: "HASH"
           Projection:
-            ProjectionType: "ALL"         # Adjust projection type based on your needs
+            ProjectionType: "ALL"
 
 #-----------------------------------------------------
 # The outputs defined below will be printed
@@ -359,24 +356,24 @@ Resources:
 Outputs:
 
   CognitoUserPoolId:
-    Value: UserPool
-    Description: The Cognito User Pool ID (COGNITO_USER_POOL_ID).
+    Value: !Ref UserPool
+    Description: 'The Cognito User Pool ID (COGNITO_USER_POOL_ID).'
   CognitoUserPoolClientId:
-    Value: UserPoolClient
-    Description: The Cognito User Pool Client ID (COGNITO_USER_POOL_CLIENT_ID).
+    Value: !Ref UserPoolClient
+    Description: 'The Cognito User Pool Client ID (COGNITO_USER_POOL_CLIENT_ID).'
   CognitoDomain:
-    Value: ${CognitoDomain}.auth.us-east-2.amazoncognito.com
-    Description: The Cognito Domain (COGNITO_DOMAIN).
+    Value: !Sub '${CognitoDomain}.auth.us-east-2.amazoncognito.com'
+    Description: 'The Cognito Domain (COGNITO_DOMAIN).'
   ApiBaseUrl:
-    Description: API Gateway endpoint base URL for Prod stage (API_BASE_URL).
-    Value: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+    Description: 'API Gateway endpoint base URL for Prod stage (API_BASE_URL).'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
   CognitoRedirectSignin:
-    Description: The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNIN).
-    Value: https://${CloudfrontDistribution.DomainName}
+    Description: 'The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNIN).'
+    Value: !Sub 'https://${CloudfrontDistribution.DomainName}'
     Condition: DeployCloudFront
   CognitoRedirectSignout:
-    Description: The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNOUT).
-    Value: https://${CloudfrontDistribution.DomainName}
+    Description: 'The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNOUT).'
+    Value: !Sub 'https://${CloudfrontDistribution.DomainName}'
     Condition: DeployCloudFront
 
 

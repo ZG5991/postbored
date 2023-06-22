@@ -82,19 +82,34 @@ export default class MusicPlaylistClient extends BindingClass {
     }
 
     async getAllPosts(errorCallback) {
+
         try {
-            const response = await this.axiosClient.get(`posts`);
+            const token = await this.getTokenOrThrow("Only authenticated users can create playlists.");
+            const response = await this.axiosClient.get(`posts`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             return response.data.posts;
         } catch (error) {
             this.handleError(error, errorCallback);
         }
+
     }
 
     async getAllPostsForUser(userName, errorCallback) {
       console.log("Client attempting to get posts for user...");
 
       try {
-        const response = await this.axiosClient.get(`/author-index/${userName}`); // Use template literal `${}` to include the userName in the URL
+
+        const token = await this.getTokenOrThrow("Only authenticated users can create playlists.");
+        const response = await this.axiosClient.get(`/author-index/${userName}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
 
         console.log("Client successfully got posts!");
 
@@ -150,7 +165,12 @@ export default class MusicPlaylistClient extends BindingClass {
    async deletePost(id, errorCallback) {
                   try {
                       const token = await this.getTokenOrThrow("Only authenticated users can delete playlists.");
-                      const response = await this.axiosClient.delete(`posts/${id}`);
+                      const response = await this.axiosClient.delete(`posts/${id}`,
+                      {
+                                                 headers: {
+                                                     Authorization: `Bearer ${token}`
+                                                 }
+                                             });
                       return response.data.posts;
                   } catch (error) {
                       this.handleError(error, errorCallback)
@@ -160,7 +180,11 @@ export default class MusicPlaylistClient extends BindingClass {
     async likePost(id, errorCallback) {
                      try {
                          const token = await this.getTokenOrThrow("Only authenticated users can delete playlists.");
-                         const response = await this.axiosClient.put(`posts/${id}`);
+                         const response = await this.axiosClient.put(`posts/${id}`, {
+                           headers: {
+                               Authorization: `Bearer ${token}`
+                           }
+                       });
                          return response.data.posts;
                      } catch (error) {
                          this.handleError(error, errorCallback)
