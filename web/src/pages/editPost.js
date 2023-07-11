@@ -1,6 +1,6 @@
 // Filename: editPost.js
 
-import MusicPlaylistClient from '../api/musicPlaylistClient';
+import PostBoredClient from '../api/postboredClient';
 import Header from '../components/header';
 import BindingClass from '../util/bindingClass';
 import DataStore from '../util/DataStore';
@@ -19,7 +19,7 @@ class EditPost extends BindingClass {
 
         this.header.addHeaderToPage();
 
-        this.client = new MusicPlaylistClient();
+        this.client = new PostBoredClient();
 
         // Fetch the post-body from the datastore and set it as default text in the textarea
         const urlParams = new URLSearchParams(window.location.search);

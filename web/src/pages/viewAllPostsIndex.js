@@ -1,4 +1,4 @@
-import MusicPlaylistClient from '../api/musicPlaylistClient';
+import PostBoredClient from '../api/postboredClient';
 import Header from '../components/header';
 import BindingClass from "../util/bindingClass";
 import DataStore from "../util/DataStore";
@@ -30,7 +30,7 @@ class ViewAllPostsIndex extends BindingClass {
     mount() {
         this.header.addHeaderToPage();
 
-        this.client = new MusicPlaylistClient();
+        this.client = new PostBoredClient();
         this.clientLoaded();
     }
 
@@ -38,49 +38,49 @@ class ViewAllPostsIndex extends BindingClass {
      * When the playlist is updated in the datastore, update the playlist metadata on the page.
      */
 
-
-
     addPostsToPage() {
-        const posts = this.dataStore.get('all-posts');
-        if (posts == null) {
-            return;
-        }
+      const posts = this.dataStore.get('all-posts');
+      if (posts == null) {
+        return;
+      }
 
-        const container = document.getElementById('all-posts'); // Assuming there's a container element with the ID 'post-container'
+      const container = document.getElementById('all-posts'); // Assuming there's a container element with the ID 'post-container'
 
-        const sortedPosts = posts.sort((a, b) => new Date(b.timeSent) - new Date(a.timeSent));
+      const sortedPosts = posts.sort((a, b) => new Date(b.timeSent) - new Date(a.timeSent));
 
-        sortedPosts.forEach(post => {
-                     const postContainer = document.createElement('div'); // Create a container for each post
-                     postContainer.classList.add('post');
+      const fragment = document.createDocumentFragment(); // Create a document fragment
 
-                     const posterInfoContainer = document.createElement('div'); // Create a container for the poster name and date
-                     posterInfoContainer.classList.add('poster-info');
+      sortedPosts.forEach(post => {
+        const postContainer = document.createElement('div'); // Create a container for each post
+        postContainer.classList.add('post');
 
-                     const posterNameElement = document.createElement('h5');
-                     const dateSentElement = document.createElement('h6');
-                     const postBodyElement = document.createElement('p');
+        const posterInfoContainer = document.createElement('div'); // Create a container for the poster name and date
+        posterInfoContainer.classList.add('poster-info');
 
+        const posterNameElement = document.createElement('h5');
+        const dateSentElement = document.createElement('h6');
+        const postBodyElement = document.createElement('p');
 
-                     posterNameElement.classList.add('username');
-                     dateSentElement.classList.add('date');
-                     postBodyElement.classList.add('post-body');
+        posterNameElement.classList.add('username');
+        dateSentElement.classList.add('date');
+        postBodyElement.classList.add('post-body');
 
-                     posterNameElement.textContent = post.posterName;
-                     dateSentElement.textContent = new Date(post.timeSent).toLocaleDateString(undefined, { dateStyle: 'short' });
-                     postBodyElement.textContent = post.postBody;
+        posterNameElement.textContent = post.posterName;
+        dateSentElement.textContent = new Date(post.timeSent).toLocaleDateString(undefined, { dateStyle: 'short' });
+        postBodyElement.textContent = post.postBody;
 
-                     posterInfoContainer.appendChild(posterNameElement);
-                     posterInfoContainer.appendChild(dateSentElement);
-                     postContainer.appendChild(posterInfoContainer);
-                     postContainer.appendChild(postBodyElement);
+        posterInfoContainer.appendChild(posterNameElement);
+        posterInfoContainer.appendChild(dateSentElement);
+        postContainer.appendChild(posterInfoContainer);
+        postContainer.appendChild(postBodyElement);
 
-                     container.appendChild(postContainer);
-                   }); // Append the post container to the main container
+        fragment.appendChild(postContainer); // Append the post container to the document fragment
+      });
+
+      container.appendChild(fragment); // Append the document fragment to the main container
     }
 
 }
-
 /**
  * Main method to run when the page contents have loaded.
  */
